@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -18,6 +21,8 @@ import com.kboutin.utils.StringUtils;
 
 public class Picture implements Comparable<Picture> {
 
+	private final static Logger logger = LogManager.getLogger(Picture.class);
+
 	private String filePath = null;
 	private String hash = null;
 	private List<String> lstDuplicates = null;
@@ -27,6 +32,10 @@ public class Picture implements Comparable<Picture> {
 
 	public Picture(File fPicture) {
 
+		if (!FileUtils.isPicture(fPicture)) {
+			return;
+		}
+		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
 		this.hash = FileUtils.getFileMD5(fPicture);
 		this.lstDuplicates = new ArrayList<String>();
@@ -36,7 +45,8 @@ public class Picture implements Comparable<Picture> {
 
 	private final Map<String, String> extractMetaData() {
 
-		System.out.println("Extracting metadata for file : " + filePath);
+		//System.out.println("Extracting metadata for file : " + filePath);
+		logger.debug("Extracting metadata for file : " + filePath);
 		Map<String, String> mapMetaData = new TreeMap<String, String>();
 
 		Metadata metadata = null;
@@ -137,9 +147,11 @@ public class Picture implements Comparable<Picture> {
 			String duplicate = iter.next();
 			File tmp = new File(duplicate);
 			long fileSize = tmp.length();
+			logger.debug("Removing " + tmp.getPath());
 			boolean deleted = tmp.delete();
 			if (deleted) {
 
+				logger.info("Removed " + tmp.getPath());
 				deletedSpace += fileSize;
 				iter.remove();
 			}
@@ -157,13 +169,13 @@ public class Picture implements Comparable<Picture> {
 
 	public final void printInfos() {
 
-		System.out.println("Picture with filePath : " + filePath);
-		System.out.println("fileSize : " + new File(filePath).length());
+		logger.debug("Picture with filePath : " + filePath);
+		logger.debug("fileSize : " + new File(filePath).length());
 		if (hasDuplicates()) {
-			System.out.println("Duplicated Locations...");
+			logger.debug("Duplicated Locations...");
 		}
 		for (String duplicatedLocation : lstDuplicates) {
-			System.out.println("\t" + duplicatedLocation);
+			logger.debug("\t" + duplicatedLocation);
 		}
 	}
 

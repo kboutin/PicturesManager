@@ -6,11 +6,16 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class FileUtils {
+
+	private final static Logger logger = LogManager.getLogger(FileUtils.class);
 
 	public final static String getFileMD5(File f) {
 
-		System.out.println("Calculating MD5 hash for " + f.getPath());
+		logger.debug("Calculating MD5 hash for " + f.getPath());
 		String md5 = "";
 		MessageDigest md5Algo = null;
 
@@ -43,16 +48,21 @@ public class FileUtils {
 
 	public final static boolean isPicture(File f) {
 
-		return f.length() > StringUtils.KB && 
-				(f.getName().endsWith(".jpg") || f.getName().endsWith(".JPG") || f.getName().endsWith(".png") || f.getName().endsWith(".PNG"));
+		return f.length() > StringUtils.KB &&
+				(f.getName().endsWith(".jpg") || f.getName().endsWith(".JPG")
+						|| f.getName().endsWith(".jpeg") || f.getName().endsWith(".JPEG")
+						|| f.getName().endsWith(".png") || f.getName().endsWith(".PNG")
+						|| f.getName().endsWith(".gif") || f.getName().endsWith(".GIF")
+						|| f.getName().endsWith(".tiff") || f.getName().endsWith(".TIFF"));
 	}
 
 	public final static boolean isMovie(File f) {
 
-		return f.length() > StringUtils.KB && 
+		return f.length() > StringUtils.KB &&
 				(f.getName().endsWith(".avi") || f.getName().endsWith(".AVI")
 						|| f.getName().endsWith(".mp4") || f.getName().endsWith(".MP4")
 						|| f.getName().endsWith(".mpg") || f.getName().endsWith(".MPG")
+						|| f.getName().endsWith(".mpeg") || f.getName().endsWith(".MPEG")
 						|| f.getName().endsWith(".mov") || f.getName().endsWith(".MOV"));
 	}
 

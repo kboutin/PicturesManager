@@ -22,6 +22,9 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.MoviesFileFilter;
@@ -30,6 +33,8 @@ import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
 
 public class PanelDupFinder extends JPanel implements ActionListener, ListSelectionListener {
+
+	private final static Logger logger = LogManager.getLogger(PanelDupFinder.class);
 
 	/**
 	 *
@@ -64,8 +69,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	private PicturesManager picManager = PicturesManager.getInstance();
 	private PicturesLister picturesLister = null;
-
-	private FileFilter selectedFilter = null;
 
 	public PanelDupFinder() {
 
@@ -110,9 +113,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	private final long deleteDuplicatesForPicture(Picture p) {
 
-		long deletedSpace = p.removeAllDuplicates();
-
-		return deletedSpace;
+		return p.removeAllDuplicates();
 	}
 
 	private final long deleteAllDuplicates() {
@@ -181,10 +182,16 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			if (returnedValue == JFileChooser.APPROVE_OPTION) {
 
 				File f = fileChooser.getSelectedFile();
-				selectedFilter = (FileFilter) fileChooser.getFileFilter();
-				//pnlScanDir.updateDirToScan(f.getPath());
 				lblDirToScan.setText(f.getPath());
 				picturesLister = new PicturesLister(f);
+				FileFilter fileFilter = null;
+				try {
+					fileFilter = (FileFilter) fileChooser.getFileFilter();
+					picturesLister.setFileFilter(fileFilter);
+				} catch (ClassCastException ex) {
+					logger.debug("AllFilesFilter has been chosen");
+					// doNothing();
+				}
 				picturesLister.execute();
 			}
 		} else if (e.getSource().equals(btnDeleteDuplicates)) {
@@ -207,6 +214,8 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 				if (somethingToDelete) {
 					Picture p = listPictures.getSelectedValue();
+					logger.info("Deleting duplicates for " + p.getFilePath());
+					logger.info("It will free " + p.getWastedSpace());
 					if (p != null) {
 						long deletedSpace = deleteDuplicatesForPicture(p);
 
@@ -225,6 +234,8 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				if (reply == JOptionPane.YES_OPTION) {
 
 					long deletedSpace = deleteAllDuplicates();
+					logger.info("Deleting all duplicates");
+					logger.info("It has freed " + FileUtils.getReadableFileSize(deletedSpace));
 
 					JOptionPane.showMessageDialog(null, "Vous avez gagne " + FileUtils.getReadableFileSize(deletedSpace), "Espace gagne", JOptionPane.PLAIN_MESSAGE);
 					updateDuplicatesList(listPictures.getSelectedValue());
@@ -237,13 +248,11 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void valueChanged(ListSelectionEvent evt) {
 
 		if (evt.getSource() == listPictures && !evt.getValueIsAdjusting()) {
 
-			JList<Picture> list = (JList<Picture>) evt.getSource();
-			Picture tmpPic = list.getSelectedValue();
+			Picture tmpPic = listPictures.getSelectedValue();
 			updateDuplicatesList(tmpPic);
 			if (tmpPic != null) {
 
@@ -262,17 +271,25 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	private class PicturesLister extends SwingWorker<List<Picture>, Picture> {
 
 		private File dirToScan = null;
+		private FileFilter fileFilter = null;
 
 		public PicturesLister(File dirToScan) {
 
 			this.dirToScan = dirToScan;
 		}
 
+		public final void setFileFilter(FileFilter fileFilter) {
+			this.fileFilter = fileFilter;
+		}
+
 		@Override
 		protected List<Picture> doInBackground() throws Exception {
 
-			scanDir(dirToScan, selectedFilter);
-			//scanDir(PictureScanner)
+			if (fileFilter == null) {
+				scanDir(dirToScan);
+			} else {
+				scanDir(dirToScan, fileFilter);
+			}
 
 			return picManager.getPictures();
 		}
@@ -293,6 +310,19 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			}
 		}
 
+		private final List<Picture> scanDir(File f) {
+
+			if (f.isDirectory()) {
+				for (File subFile : f.listFiles()) {
+					scanDir(subFile);
+				}
+			} else if (f.isFile() && !f.getName().startsWith(".")) {
+				addAndPublishPicture(f);
+			}
+
+			return picManager.getPictures();
+		}
+
 		private final List<Picture> scanDir(File f, FileFilter fileFilter) {
 
 			if (f.isDirectory()) {
@@ -301,17 +331,22 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				}
 			} else if (f.isFile()) {
 				if (fileFilter.accept(f)) {
-					int prevSize = picManager.countPictures();
-					Picture p = new Picture(f);
-					picManager.addPicture(p);
-					if (picManager.countPictures() > prevSize) {
-						// Publish name only if picture has been added to the list ...
-						publish(p);
-					}
+					addAndPublishPicture(f);
 				}
 			}
 
 			return picManager.getPictures();
+		}
+
+		private final void addAndPublishPicture(File f) {
+
+			int prevSize = picManager.countPictures();
+			Picture p = new Picture(f);
+			picManager.addPicture(p);
+			if (picManager.countPictures() > prevSize) {
+				// Publish name only if picture has been added to the list ...
+				publish(p);
+			}
 		}
 	}
 }
