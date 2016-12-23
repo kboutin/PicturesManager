@@ -12,11 +12,16 @@ import java.util.TreeSet;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.drew.imaging.ImageProcessingException;
 import com.kboutin.gui.GenFrame;
 import com.kboutin.utils.FileUtils;
 
 public class PicturesManager {
+
+	private final static Logger logger = LogManager.getLogger(PicturesManager.class);
 
 	private static PicturesManager INSTANCE = null;
 
@@ -42,8 +47,8 @@ public class PicturesManager {
 
 	/**
 	 * @param args
-	 * @throws IOException 
-	 * @throws ImageProcessingException 
+	 * @throws IOException
+	 * @throws ImageProcessingException
 	 */
 	public static void main(String[] args) throws ImageProcessingException, IOException {
 
@@ -57,6 +62,7 @@ public class PicturesManager {
 		//PicturesManager manager = new PicturesManager();
 		//manager.scanDir(iPhotoDir);
 
+		logger.info("Launching application");
 		// Set the look and feel to the default of the system...
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
