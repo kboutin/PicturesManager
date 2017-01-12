@@ -39,13 +39,11 @@ public class Picture implements Comparable<Picture> {
 		this.filePath = fPicture.getPath();
 		this.hash = FileUtils.getFileMD5(fPicture);
 		this.lstDuplicates = new ArrayList<String>();
-		//this.metadata = metadataExtractor.extractMetaData(this);
 		this.metadata = extractMetaData();
 	}
 
 	private final Map<String, String> extractMetaData() {
 
-		//System.out.println("Extracting metadata for file : " + filePath);
 		logger.debug("Extracting metadata for file : " + filePath);
 		Map<String, String> mapMetaData = new TreeMap<String, String>();
 
@@ -59,10 +57,9 @@ public class Picture implements Comparable<Picture> {
 			mapMetaData = null;
 		}
 		for (Directory directory : metadata.getDirectories()) {
-		    for (Tag tag : directory.getTags()) {
-		    	mapMetaData.put(tag.getTagName(), tag.getDescription());
-		        //System.out.format("[%s] - %s = %s\n", directory.getName(), tag.getTagName(), tag.getDescription());
-		    }
+			for (Tag tag : directory.getTags()) {
+				mapMetaData.put(tag.getTagName(), tag.getDescription());
+			}
 		}
 
 		return mapMetaData;
@@ -173,9 +170,9 @@ public class Picture implements Comparable<Picture> {
 		logger.debug("fileSize : " + new File(filePath).length());
 		if (hasDuplicates()) {
 			logger.debug("Duplicated Locations...");
-		}
-		for (String duplicatedLocation : lstDuplicates) {
-			logger.debug("\t" + duplicatedLocation);
+			for (String duplicatedLocation : lstDuplicates) {
+				logger.debug("\t" + duplicatedLocation);
+			}
 		}
 	}
 

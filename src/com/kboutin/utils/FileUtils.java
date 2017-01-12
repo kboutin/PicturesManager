@@ -48,22 +48,22 @@ public class FileUtils {
 
 	public final static boolean isPicture(File f) {
 
+		String fileName = f.getName().toLowerCase();
+
 		return f.length() > StringUtils.KB &&
-				(f.getName().endsWith(".jpg") || f.getName().endsWith(".JPG")
-						|| f.getName().endsWith(".jpeg") || f.getName().endsWith(".JPEG")
-						|| f.getName().endsWith(".png") || f.getName().endsWith(".PNG")
-						|| f.getName().endsWith(".gif") || f.getName().endsWith(".GIF")
-						|| f.getName().endsWith(".tiff") || f.getName().endsWith(".TIFF"));
+				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
+						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
+						|| fileName.endsWith(".tiff"));
 	}
 
 	public final static boolean isMovie(File f) {
 
+		String fileName = f.getName().toLowerCase();
+
 		return f.length() > StringUtils.KB &&
-				(f.getName().endsWith(".avi") || f.getName().endsWith(".AVI")
-						|| f.getName().endsWith(".mp4") || f.getName().endsWith(".MP4")
-						|| f.getName().endsWith(".mpg") || f.getName().endsWith(".MPG")
-						|| f.getName().endsWith(".mpeg") || f.getName().endsWith(".MPEG")
-						|| f.getName().endsWith(".mov") || f.getName().endsWith(".MOV"));
+				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
+						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
+						|| fileName.endsWith(".mov"));
 	}
 
 	public final static String getReadableFileSize(File f) {
@@ -84,18 +84,18 @@ public class FileUtils {
 		res = String.format("%.2f", totalSize);
 
 		switch (unit) {
-			case 0:
-				res += " o";
-				break;
-			case 1:
-				res += " ko";
-				break;
-			case 2:
-				res += " Mo";
-				break;
-			case 3:
-				res += " Go";
-				break;
+		case 0:
+			res += " o";
+			break;
+		case 1:
+			res += " ko";
+			break;
+		case 2:
+			res += " Mo";
+			break;
+		case 3:
+			res += " Go";
+			break;
 		}
 
 		return res;

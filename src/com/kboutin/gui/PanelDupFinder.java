@@ -46,7 +46,8 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	private JButton btnChooseDir = new JButton("...");
 	//private PanelScanDir pnlScanDir = null;
 
-	private JPanel pnlDuplicatedFiles = new JPanel(new BorderLayout());
+	//private JPanel pnlDuplicatedFiles = new JPanel(new BorderLayout());
+	private JPanel pnlDuplicatedFiles = new JPanel(new GridLayout());
 	private DefaultListModel<Picture> listModelPictures = new DefaultListModel<Picture>();
 	private JList<Picture> listPictures = new JList<Picture>(listModelPictures);
 	private JScrollPane scroll = new JScrollPane(listPictures);
@@ -104,8 +105,8 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		pnlLeft.add(pnlForFiles);
 		pnlLeft.add(pnlForDuplicatedLocations);
 
-		pnlDuplicatedFiles.add(pnlLeft, BorderLayout.WEST);
-		pnlDuplicatedFiles.add(pnlPicture, BorderLayout.CENTER);
+		pnlDuplicatedFiles.add(pnlLeft);
+		pnlDuplicatedFiles.add(pnlPicture);
 
 		add(pnlDirToScan, BorderLayout.NORTH);
 		add(pnlDuplicatedFiles, BorderLayout.CENTER);
@@ -145,26 +146,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		String lostSize = FileUtils.getReadableFileSize(picManager.getTotalWastedSpace());
 		pnlForDuplicatedLocations.setBorder(GUIUtils.createEtchedTitledBorder("Doublons (" + lostSize + ")"));
 	}
-
-	/*public final void chooseDir() {
-
-		JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home")));
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setAcceptAllFileFilterUsed(true);
-		fileChooser.addChoosableFileFilter(new MoviesFileFilter());
-		fileChooser.setFileFilter(new PicturesFileFilter());
-		int returnedValue = fileChooser.showOpenDialog(this);
-
-		if (returnedValue == JFileChooser.APPROVE_OPTION) {
-
-			File f = fileChooser.getSelectedFile();
-			selectedFilter = (FileFilter) fileChooser.getFileFilter();
-			//pnlScanDir.updateDirToScan(f.getPath());
-			picturesLister = new PicturesLister(f);
-			picturesLister.execute();
-		}
-	}*/
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

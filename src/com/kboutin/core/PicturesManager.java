@@ -19,6 +19,12 @@ import com.drew.imaging.ImageProcessingException;
 import com.kboutin.gui.GenFrame;
 import com.kboutin.utils.FileUtils;
 
+/*
+ * TODO KBO Simplify memory management for duplicates.
+ * Once it has been detected as duplicate of a file, only store its path
+ * Map<Picture, String> : firstObject is the first file found, others are only locations where dup files are ...
+ */
+
 public class PicturesManager {
 
 	private final static Logger logger = LogManager.getLogger(PicturesManager.class);
@@ -31,6 +37,8 @@ public class PicturesManager {
 	private static List<String> lstAcceptedMetadata = new ArrayList<String>();
 
 	private File dirToScan = null;
+
+	private int selectedIndex = 0;
 
 	static {
 
@@ -118,6 +126,39 @@ public class PicturesManager {
 	public final List<Picture> getPictures() {
 
 		return lstPictures;
+	}
+
+	public Picture getCurrentPicture() {
+
+		if (!lstPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < lstPictures.size()) {
+			return lstPictures.get(selectedIndex);
+		}
+
+		return null;
+	}
+
+	public Picture nextPicture() {
+
+		selectedIndex++;
+		// Loop over the list...
+		// If the end has been reached, start again from the beginning.
+		if (selectedIndex >= lstPictures.size()) {
+			selectedIndex = 0;
+		}
+
+		return getCurrentPicture();
+	}
+
+	public Picture previousPicture() {
+
+		selectedIndex--;
+		// Loop over the list...
+		// If the beginning has been reached, start again from the end.
+		if (selectedIndex < 0) {
+			selectedIndex = lstPictures.size() - 1;
+		}
+
+		return getCurrentPicture();
 	}
 
 	public final int countPictures() {

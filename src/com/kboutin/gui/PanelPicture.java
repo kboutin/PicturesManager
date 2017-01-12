@@ -41,13 +41,8 @@ public class PanelPicture extends JPanel {
 		}
 
 		File pictureFile = new File(p.getFilePath());
-		updatePicture(pictureFile);
-	}
-
-	private final void updatePicture(File picture) {
-
-		setBorder(GUIUtils.createEtchedTitledBorder(picture != null ? picture.getName() : ""));
-		lblPicture.setIcon(getIconFromPicture(picture));
+		setBorder(GUIUtils.createEtchedTitledBorder(pictureFile != null ? pictureFile.getName() : ""));
+		lblPicture.setIcon(getIconFromPicture(pictureFile));
 	}
 
 	// FIXME KBO Fix case when picture is portrait side...
@@ -56,9 +51,6 @@ public class PanelPicture extends JPanel {
 		if (selectedPicture == null) {
 			return null;
 		}
-
-		//System.out.println("PictureTitle : " + selectedPicture.getName());
-		//System.out.println("PictureWidth : " + lblPicture.getWidth() + " - PictureHeight : " + lblPicture.getHeight());
 
 		BufferedImage bufferedPicture = null;
 		Image resizedPicture = null;

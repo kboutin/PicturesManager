@@ -5,8 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -14,6 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
@@ -28,13 +29,14 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private final static Logger logger = LogManager.getLogger(PanelMetadataExtractor.class);
+
 	private JPanel pnlForPicture = new JPanel(new BorderLayout());
 
 	private JPanel pnlForButtons = new JPanel();
 	private JButton btnPrevious = new JButton(" < ");
 	private JButton btnNext = new JButton(" > ");
 
-	//private PanelScanDir pnlScanDir = null;
 	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
 	private JLabel lblDirToScan = new JLabel();
 	private JButton btnChooseDir = new JButton("...");
@@ -45,8 +47,6 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	private JTextArea txtPictureMetadata = null;
 
 	private PicturesManager picManager = PicturesManager.getInstance();
-	private List<Picture> lstPictures = new ArrayList<Picture>();
-	private int selectedIndex = 0;
 
 	public PanelMetadataExtractor() {
 
@@ -57,16 +57,22 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		pnlForButtons.add(btnPrevious);
 		pnlForButtons.add(btnNext);
 
-		//this.pnlScanDir = pnlScanDir;
-		//this.pnlScanDir.getButtonChooseDir().addActionListener(this);
 		btnChooseDir.addActionListener(this);
 		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
 		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
 		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 
-		//pnlLeft.add(pnlDirToScan, BorderLayout.NORTH);
 		pnlForPicture.add(pnlPicture, BorderLayout.CENTER);
 		pnlForPicture.add(pnlForButtons, BorderLayout.SOUTH);
+		pnlForPicture.setFocusable(true);
+		// TODO KBO Find a way to add a keyListener
+		// https://stackoverflow.com/questions/3728035/java-tracking-keystrokes-with-inputmap
+		/*pnlForPicture.addKeyListener(new KeyAdapter() {
+			@Override
+			public final void keyPressed(KeyEvent ke) {
+				logger.debug(ke.getKeyCode());
+			}
+		});*/
 
 		txtPictureMetadata = new JTextArea(10, 30);
 		txtPictureMetadata.setEditable(false);
@@ -100,14 +106,12 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 			File f = fileChooser.getSelectedFile();
 			//pnlScanDir.updateDirToScan(f.getPath());
-			lblDirToScan.setText("Repertoire a analyser : " + f.getPath());
+			lblDirToScan.setText(f.getPath());
 			//metadataExtractor.scanDir(f);
 			picManager.setDirToScan(f);
 			picManager.scanDir(f);
-			//metadataExtractor.printMetas(); // Test
-			//lstPictures = metadataExtractor.getLstPictures();
-			lstPictures = picManager.getPictures();
-			updatePicture(getCurrentPicture());
+			//lstPictures = picManager.getPictures();
+			updatePicture(picManager.getCurrentPicture());
 		}
 	}
 
@@ -116,25 +120,19 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		if (ae.getSource().equals(btnPrevious)) {
 
-			selectedIndex--;
-			if (selectedIndex < 0) {
-				selectedIndex = lstPictures.size() - 1;
-			}
-			updatePicture(getCurrentPicture());
+			updatePicture(picManager.previousPicture());
 		} else if (ae.getSource().equals(btnNext)) {
 
-			selectedIndex++;
-			if (selectedIndex >= lstPictures.size()) {
-				selectedIndex = 0;
-			}
-			updatePicture(getCurrentPicture());
+			updatePicture(picManager.nextPicture());
 			/*PictureFinder finder = new PictureFinder(lstPictures);
 			List<Picture> filteredPictures = finder.findPicturesWithCondition("F-Number", "f/2,8");
 			if (filteredPictures != null && !filteredPictures.isEmpty())
 				updatePicture(new File(filteredPictures.get(0).getFilePath()));*/
 		} else if (ae.getSource().equals(btnChooseDir)) {
 
-			JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
+			chooseDir();
+
+			/*JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setAcceptAllFileFilterUsed(true);
@@ -152,8 +150,9 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 				//metadataExtractor.printMetas(); // Test
 				//lstPictures = metadataExtractor.getLstPictures();
 				lstPictures = picManager.getPictures();
-				updatePicture(getCurrentPicture());
-			}
+				updatePicture(picManager.getCurrentPicture());
+				//updatePicture(getCurrentPicture());
+			}*/
 		}
 	}
 
@@ -166,11 +165,6 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		txtPictureMetadata.setText(p.getMetadataAsString());
 		txtPictureMetadata.setCaretPosition(0);
-	}
-
-	private final Picture getCurrentPicture() {
-
-		return lstPictures.isEmpty() ? null : lstPictures.get(selectedIndex);
 	}
 
 	private final void updatePicture(Picture picture) {
