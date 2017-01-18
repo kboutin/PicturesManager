@@ -13,9 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
@@ -29,7 +26,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger logger = LogManager.getLogger(PanelMetadataExtractor.class);
+	//private final static Logger logger = LogManager.getLogger(PanelMetadataExtractor.class);
 
 	private JPanel pnlForPicture = new JPanel(new BorderLayout());
 
