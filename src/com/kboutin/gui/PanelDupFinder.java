@@ -112,12 +112,12 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		add(pnlDuplicatedFiles, BorderLayout.CENTER);
 	}
 
-	private final long deleteDuplicatesForPicture(Picture p) {
+	private long deleteDuplicatesForPicture(Picture p) {
 
 		return p.removeAllDuplicates();
 	}
 
-	private final long deleteAllDuplicates() {
+	private long deleteAllDuplicates() {
 
 		long deletedSpace = 0;
 
@@ -130,7 +130,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		return deletedSpace;
 	}
 
-	private final void updateDuplicatesList(Picture selectedPic) {
+	private void updateDuplicatesList(Picture selectedPic) {
 
 		if (!listModelLocations.isEmpty()) {
 
@@ -291,7 +291,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			}
 		}
 
-		private final List<Picture> scanDir(File f) {
+		private List<Picture> scanDir(File f) {
 
 			if (f.isDirectory()) {
 				for (File subFile : f.listFiles()) {
@@ -304,7 +304,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			return picManager.getPictures();
 		}
 
-		private final List<Picture> scanDir(File f, FileFilter fileFilter) {
+		private List<Picture> scanDir(File f, FileFilter fileFilter) {
 
 			if (f.isDirectory()) {
 				for (File subFile : f.listFiles(fileFilter)) {
@@ -319,7 +319,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			return picManager.getPictures();
 		}
 
-		private final void addAndPublishPicture(File f) {
+		private void addAndPublishPicture(File f) {
 
 			int prevSize = picManager.countPictures();
 			Picture p = new Picture(f);

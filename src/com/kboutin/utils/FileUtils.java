@@ -13,7 +13,7 @@ public class FileUtils {
 
 	private final static Logger logger = LogManager.getLogger(FileUtils.class);
 
-	public final static String getFileMD5(File f) {
+	public static String getFileMD5(File f) {
 
 		logger.debug("Calculating MD5 hash for " + f.getPath());
 		String md5 = "";
@@ -46,7 +46,7 @@ public class FileUtils {
 		return md5;
 	}
 
-	public final static boolean isPicture(File f) {
+	public static boolean isPicture(File f) {
 
 		String fileName = f.getName().toLowerCase();
 
@@ -56,7 +56,7 @@ public class FileUtils {
 						|| fileName.endsWith(".tiff"));
 	}
 
-	public final static boolean isMovie(File f) {
+	public static boolean isMovie(File f) {
 
 		String fileName = f.getName().toLowerCase();
 
@@ -66,12 +66,12 @@ public class FileUtils {
 						|| fileName.endsWith(".mov"));
 	}
 
-	public final static String getReadableFileSize(File f) {
+	public static String getReadableFileSize(File f) {
 
 		return getReadableFileSize(f.length());
 	}
 
-	public final static String getReadableFileSize(long size) {
+	public static String getReadableFileSize(long size) {
 
 		String res = null;
 		int unit = 0;

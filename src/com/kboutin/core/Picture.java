@@ -42,7 +42,7 @@ public class Picture implements Comparable<Picture> {
 		this.metadata = extractMetaData();
 	}
 
-	private final Map<String, String> extractMetaData() {
+	private Map<String, String> extractMetaData() {
 
 		logger.debug("Extracting metadata for file : " + filePath);
 		Map<String, String> mapMetaData = new TreeMap<String, String>();
@@ -51,9 +51,7 @@ public class Picture implements Comparable<Picture> {
 		try {
 			File f = new File(filePath);
 			metadata = ImageMetadataReader.readMetadata(f);
-		} catch (ImageProcessingException e) {
-			mapMetaData = null;
-		} catch (IOException e) {
+		} catch (ImageProcessingException | IOException e) {
 			mapMetaData = null;
 		}
 		for (Directory directory : metadata.getDirectories()) {

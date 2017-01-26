@@ -90,7 +90,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		//add(pnlPictureMetadata, BorderLayout.CENTER);
 	}
 
-	public final void chooseDir() {
+	private final void chooseDir() {
 
 		JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -153,7 +153,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		}
 	}
 
-	private final void displayPictureInfo(Picture p) {
+	private void displayPictureInfo(Picture p) {
 
 		if (!txtPictureMetadata.getText().isEmpty()) {
 
@@ -164,7 +164,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		txtPictureMetadata.setCaretPosition(0);
 	}
 
-	private final void updatePicture(Picture picture) {
+	private void updatePicture(Picture picture) {
 
 		if (picture != null) {
 			pnlPicture.updatePicture(picture);

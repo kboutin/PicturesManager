@@ -185,7 +185,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 			}
 		}
 
-		private final void scanDir(File f) {
+		private void scanDir(File f) {
 
 			if (f.isDirectory()) {
 				for (File subFile : f.listFiles()) {

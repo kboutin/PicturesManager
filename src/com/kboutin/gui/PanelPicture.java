@@ -46,7 +46,7 @@ public class PanelPicture extends JPanel {
 	}
 
 	// FIXME KBO Fix case when picture is portrait side...
-	private final Icon getIconFromPicture(File selectedPicture) {
+	private Icon getIconFromPicture(File selectedPicture) {
 
 		if (selectedPicture == null) {
 			return null;

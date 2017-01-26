@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 public class PicturesFinder {
 
-	public final static Logger logger = LogManager.getLogger(PicturesFinder.class);
+	private final static Logger logger = LogManager.getLogger(PicturesFinder.class);
 
 	private List<Picture> lstPictures = null;
 

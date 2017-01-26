@@ -32,7 +32,7 @@ public class PanelScanDir extends JPanel {
 		setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 	}
 
-	public final static PanelScanDir getInstance() {
+	public static PanelScanDir getInstance() {
 
 		if (INSTANCE == null) {
 			INSTANCE = new PanelScanDir();
