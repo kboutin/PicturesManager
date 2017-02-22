@@ -114,7 +114,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	private long deleteDuplicatesForPicture(Picture p) {
 
-		return p.removeAllDuplicates();
+		return picManager.removeDuplicates(p);
 	}
 
 	private long deleteAllDuplicates() {
@@ -138,7 +138,8 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 		if (selectedPic != null) {
 
-			for (String location : selectedPic.getDuplicates()) {
+			for (String location : picManager.getMapPictures().get(selectedPic)) {
+				//for (String location : selectedPic.getDuplicates()) {
 				listModelLocations.addElement(location);
 			}
 		}
@@ -196,7 +197,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				if (somethingToDelete) {
 					Picture p = listPictures.getSelectedValue();
 					logger.info("Deleting duplicates for " + p.getFilePath());
-					logger.info("It will free " + p.getWastedSpace());
+					logger.info("It will free " + picManager.getWastedSpaceForPicture(p));
 					if (p != null) {
 						long deletedSpace = deleteDuplicatesForPicture(p);
 
@@ -238,7 +239,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			if (tmpPic != null) {
 
 				pnlPicture.updatePicture(tmpPic);
-				btnDeleteDuplicates.setEnabled(tmpPic.hasDuplicates()); // Enable the button only if needed ...
+				btnDeleteDuplicates.setEnabled(picManager.hasDuplicates(tmpPic)); // Enable the button only if needed ...
 
 				tmpPic = null;
 			} else {

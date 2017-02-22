@@ -2,9 +2,6 @@ package com.kboutin.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,7 +22,7 @@ public class Picture implements Comparable<Picture> {
 
 	private String filePath = null;
 	private String hash = null;
-	private List<String> lstDuplicates = null;
+	//private List<String> lstDuplicates = null;
 	private Map<String, String> metadata = null;
 
 	//private MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
@@ -38,7 +35,7 @@ public class Picture implements Comparable<Picture> {
 		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
 		this.hash = FileUtils.getFileMD5(fPicture);
-		this.lstDuplicates = new ArrayList<String>();
+		//this.lstDuplicates = new ArrayList<String>();
 		this.metadata = extractMetaData();
 	}
 
@@ -87,34 +84,34 @@ public class Picture implements Comparable<Picture> {
 		return s.toString();
 	}
 
-	public final List<String> getDuplicates() {
+	/*public final List<String> getDuplicates() {
 
 		return lstDuplicates;
-	}
+	}*/
 
-	public final long getWastedSpace() {
+	/*public final long getWastedSpace() {
 
 		long fileSize = new File(filePath).length();
 
 		return fileSize * lstDuplicates.size();
-	}
+	}*/
 
-	public final int countDuplicates() {
+	/*public final int countDuplicates() {
 
 		return lstDuplicates.size();
-	}
+	}*/
 
-	public final boolean hasDuplicates() {
+	/*public final boolean hasDuplicates() {
 
 		return lstDuplicates.size() > 0;
-	}
+	}*/
 
-	public final void addDuplicate(String duplicate) {
+	/*public final void addDuplicate(String duplicate) {
 
 		lstDuplicates.add(duplicate);
-	}
+	}*/
 
-	public final long removeDuplicate(String duplicate) {
+	/*public final long removeDuplicate(String duplicate) {
 
 		boolean deleted = false;
 		long deletedSpace = 0;
@@ -131,9 +128,9 @@ public class Picture implements Comparable<Picture> {
 		}
 
 		return deletedSpace;
-	}
+	}*/
 
-	public final long removeAllDuplicates() {
+	/*public final long removeAllDuplicates() {
 
 		long deletedSpace = 0;
 
@@ -153,7 +150,7 @@ public class Picture implements Comparable<Picture> {
 		}
 
 		return deletedSpace;
-	}
+	}*/
 
 	public final void printMetaData() {
 
@@ -162,7 +159,7 @@ public class Picture implements Comparable<Picture> {
 		}
 	}
 
-	public final void printInfos() {
+	/*public final void printInfos() {
 
 		logger.debug("Picture with filePath : " + filePath);
 		logger.debug("fileSize : " + new File(filePath).length());
@@ -172,7 +169,7 @@ public class Picture implements Comparable<Picture> {
 				logger.debug("\t" + duplicatedLocation);
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public int compareTo(Picture p) {

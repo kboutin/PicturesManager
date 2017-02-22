@@ -3,6 +3,7 @@ package com.kboutin.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +23,8 @@ import com.kboutin.utils.FileUtils;
 /*
  * TODO KBO Simplify memory management for duplicates.
  * Once it has been detected as duplicate of a file, only store its path
- * Map<Picture, String> : firstObject is the first file found, others are only locations where dup files are ...
+ * Map<String, List<String>> : firstObject is the first file found, others are only locations where dup files are ...
+ * The key is the hash of the picture.
  */
 
 public class PicturesManager {
@@ -31,7 +33,8 @@ public class PicturesManager {
 
 	private static PicturesManager INSTANCE = null;
 
-	private List<Picture> lstPictures = new ArrayList<Picture>();
+	private Map<Picture, List<String>> mapPictures = new TreeMap<>();
+	//private List<Picture> lstPictures = new ArrayList<Picture>();
 
 	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<String, Set<String>>();
 	private static List<String> lstAcceptedMetadata = new ArrayList<String>();
@@ -108,6 +111,10 @@ public class PicturesManager {
 		this.dirToScan = dirToScan;
 	}
 
+	public final Map<Picture, List<String>> getMapPictures() {
+		return mapPictures;
+	}
+
 	public final void scanDir(File f) {
 
 		if (f.isDirectory()) {
@@ -125,13 +132,15 @@ public class PicturesManager {
 
 	public final List<Picture> getPictures() {
 
-		return lstPictures;
+		return new ArrayList<Picture>(mapPictures.keySet());
+		//return lstPictures;
 	}
 
 	public Picture getCurrentPicture() {
 
-		if (!lstPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < lstPictures.size()) {
-			return lstPictures.get(selectedIndex);
+		if (!mapPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < mapPictures.keySet().size()) {
+
+			return getPictures().get(selectedIndex);
 		}
 
 		return null;
@@ -142,7 +151,7 @@ public class PicturesManager {
 		selectedIndex++;
 		// Loop over the list...
 		// If the end has been reached, start again from the beginning.
-		if (selectedIndex >= lstPictures.size()) {
+		if (selectedIndex >= getPictures().size()) {
 			selectedIndex = 0;
 		}
 
@@ -155,7 +164,7 @@ public class PicturesManager {
 		// Loop over the list...
 		// If the beginning has been reached, start again from the end.
 		if (selectedIndex < 0) {
-			selectedIndex = lstPictures.size() - 1;
+			selectedIndex = getPictures().size() - 1;
 		}
 
 		return getCurrentPicture();
@@ -163,27 +172,46 @@ public class PicturesManager {
 
 	public final int countPictures() {
 
-		return lstPictures.size();
+		return getPictures().size();
+	}
+
+	public final boolean hasDuplicates(Picture p) {
+
+		return mapPictures.get(p).size() > 1;
 	}
 
 	public final int countDuplicates() {
 
 		int totalDuplicates = 0;
 
-		for (Picture p : lstPictures) {
+		for (Picture p : getPictures()) {
 
-			totalDuplicates += p.countDuplicates();
+			totalDuplicates += (mapPictures.get(p).size() - 1);
+			//totalDuplicates += p.countDuplicates();
 		}
 
 		return totalDuplicates;
 	}
 
-	/*public final long getWastedSpaceForPicture(Picture p) {
+	public final long getWastedSpaceForPicture(Picture p) {
 
-		return p.getWastedSpace();
-	}*/
+		long fileSize = new File(p.getFilePath()).length();
+
+		return fileSize * (mapPictures.get(p).size() - 1);
+	}
 
 	public final long getTotalWastedSpace() {
+
+		long totalSpace = 0;
+		for (Picture p : mapPictures.keySet()) {
+
+			totalSpace += getWastedSpaceForPicture(p);
+		}
+
+		return totalSpace;
+	}
+
+	/*public final long getTotalWastedSpace() {
 
 		long totalSpace = 0;
 		for (Picture p : lstPictures) {
@@ -192,21 +220,27 @@ public class PicturesManager {
 		}
 
 		return totalSpace;
-	}
+	}*/
 
 	public final void addPicture(Picture p) {
 
 		boolean found = false;
-		for (Picture pic : lstPictures) {
+		for (Picture pic : mapPictures.keySet()) {
 			if (p.equals(pic)) {
 
-				pic.addDuplicate(p.getFilePath());
+				List<String> lstPaths = mapPictures.get(pic);
+				lstPaths.add(p.getFilePath());
+				mapPictures.put(pic, lstPaths);
+				//pic.addDuplicate(p.getFilePath());
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			lstPictures.add(p);
+			List<String> lstPaths = new ArrayList<>();
+			lstPaths.add(p.getFilePath());
+			mapPictures.put(p, lstPaths);
+			//lstPictures.add(p);
 		}
 	}
 
@@ -224,6 +258,35 @@ public class PicturesManager {
 				mapValuesForMetadata.put(key, lstValuesForMetadata);
 			}
 		}
+	}
+
+	public final long removeDuplicates(Picture p) {
+
+		boolean deleted = false;
+		long deletedSpace = 0;
+		if (mapPictures.keySet().contains(p)) {
+
+			List<String> lstPaths = mapPictures.get(p);
+			Iterator<String> iter = lstPaths.iterator();
+			// Skip first element
+			if (iter.hasNext()) {
+				iter.next();
+			}
+			while (iter.hasNext()) {
+
+				String s = iter.next();
+				File f = new File(s);
+				long fileSize = f.length();
+				deleted = f.delete();
+				if (deleted) {
+
+					deletedSpace = fileSize;
+					iter.remove();
+				}
+			}
+		}
+
+		return deletedSpace;
 	}
 
 	public final Set<String> getMetadataKeySet() {
