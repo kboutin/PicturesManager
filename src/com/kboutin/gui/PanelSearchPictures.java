@@ -118,10 +118,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			for (String foundValue : picManager.getValuesForKey(selectedCriteria)) {
-
-				listModelValues.addElement(foundValue);
-			}
+			picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
 		}
 	}
 
@@ -171,10 +168,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			for (String foundValue : picManager.getValuesForKey(selectedCriteria)) {
-
-				listModelValues.addElement(foundValue);
-			}
+			picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
 		}
 
 		@Override

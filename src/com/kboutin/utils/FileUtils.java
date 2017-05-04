@@ -3,6 +3,10 @@ package com.kboutin.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -44,6 +48,17 @@ public class FileUtils {
 		}
 
 		return md5;
+	}
+
+	public static byte[] calculateMD5(Path file) throws NoSuchAlgorithmException, IOException {
+
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		try (InputStream is = Files.newInputStream(file); DigestInputStream dis = new DigestInputStream(is, md)) {
+			while (dis.read() != -1)
+				;
+		}
+
+		return md.digest();
 	}
 
 	public static boolean isPicture(File f) {

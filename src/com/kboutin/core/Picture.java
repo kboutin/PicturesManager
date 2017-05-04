@@ -15,7 +15,6 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.StringUtils;
 
@@ -52,11 +51,11 @@ public class Picture implements Comparable<Picture> {
 			File f = new File(filePath);
 			metadata = ImageMetadataReader.readMetadata(f);
 		} catch (ImageProcessingException | IOException e) {
-			mapMetaData = null;
+			metadata = null;
 		}
-		for (Directory directory : metadata.getDirectories()) {
-			for (Tag tag : directory.getTags()) {
-				mapMetaData.put(tag.getTagName(), tag.getDescription());
+		if (metadata != null) {
+			for (Directory directory : metadata.getDirectories()) {
+				directory.getTags().stream().forEach(tag -> mapMetaData.put(tag.getTagName(), tag.getDescription()));
 			}
 		}
 
@@ -68,7 +67,6 @@ public class Picture implements Comparable<Picture> {
 	}
 
 	public final String getSize() {
-
 		return FileUtils.getReadableFileSize(new File(filePath));
 	}
 
@@ -80,9 +78,7 @@ public class Picture implements Comparable<Picture> {
 
 		StringBuilder s = new StringBuilder();
 
-		for (String key :  metadata.keySet()) {
-			s.append("[" + key + "] -> " + metadata.get(key) + StringUtils.NEW_LINE);
-		}
+		metadata.keySet().stream().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + StringUtils.NEW_LINE));
 
 		return s.toString();
 	}
@@ -157,9 +153,7 @@ public class Picture implements Comparable<Picture> {
 
 	public final void printMetaData() {
 
-		for (String category : metadata.keySet()) {
-			System.out.format("[%s] -> %s\n", category, metadata.get(category));
-		}
+		metadata.keySet().stream().forEach(category -> System.out.format("[%s] -> %s\n", category, metadata.get(category)));
 	}
 
 	public final void printInfos() {

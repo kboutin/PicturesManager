@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -168,30 +169,14 @@ public class PicturesManager {
 
 	public final int countDuplicates() {
 
-		int totalDuplicates = 0;
-
-		for (Picture p : lstPictures) {
-
-			totalDuplicates += p.countDuplicates();
-		}
-
-		return totalDuplicates;
+		// Sum the countDuplicates of each picture in the list.
+		return lstPictures.stream().collect(Collectors.summingInt(Picture::countDuplicates));
 	}
-
-	/*public final long getWastedSpaceForPicture(Picture p) {
-
-		return p.getWastedSpace();
-	}*/
 
 	public final long getTotalWastedSpace() {
 
-		long totalSpace = 0;
-		for (Picture p : lstPictures) {
-
-			totalSpace += p.getWastedSpace();
-		}
-
-		return totalSpace;
+		// Sum the getWastedSpace of each picture in the list.
+		return lstPictures.stream().collect(Collectors.summingLong(Picture::getWastedSpace));
 	}
 
 	public final void addPicture(Picture p) {

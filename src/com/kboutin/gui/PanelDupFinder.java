@@ -138,9 +138,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 		if (selectedPic != null) {
 
-			for (String location : selectedPic.getDuplicates()) {
-				listModelLocations.addElement(location);
-			}
+			selectedPic.getDuplicates().stream().forEach(location -> listModelLocations.addElement(location));
 		}
 
 		String lostSize = FileUtils.getReadableFileSize(picManager.getTotalWastedSpace());
