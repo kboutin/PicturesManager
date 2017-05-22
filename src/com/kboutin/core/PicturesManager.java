@@ -1,5 +1,13 @@
 package com.kboutin.core;
 
+import com.drew.imaging.ImageProcessingException;
+import com.kboutin.gui.GenFrame;
+import com.kboutin.utils.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,17 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.drew.imaging.ImageProcessingException;
-import com.kboutin.gui.GenFrame;
-import com.kboutin.utils.FileUtils;
+import java.util.stream.Stream;
 
 /*
  * TODO KBO Simplify memory management for duplicates.
@@ -32,12 +30,10 @@ public class PicturesManager {
 
 	private static PicturesManager INSTANCE = null;
 
-	private List<Picture> lstPictures = new ArrayList<Picture>();
+	private List<Picture> lstPictures = new ArrayList<>();
 
-	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<String, Set<String>>();
-	private static List<String> lstAcceptedMetadata = new ArrayList<String>();
-
-	private File dirToScan = null;
+	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
+	private static List<String> lstAcceptedMetadata = new ArrayList<>();
 
 	private int selectedIndex = 0;
 
@@ -101,20 +97,10 @@ public class PicturesManager {
 		return INSTANCE;
 	}
 
-	public final File getDirToScan() {
-		return dirToScan;
-	}
-
-	public final void setDirToScan(File dirToScan) {
-		this.dirToScan = dirToScan;
-	}
-
 	public final void scanDir(File f) {
 
 		if (f.isDirectory()) {
-			for (File subFile : f.listFiles()) {
-				scanDir(subFile);
-			}
+			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
 		} else if (f.isFile()) {
 			if(FileUtils.isPicture(f)) {
 				Picture p = new Picture(f);
@@ -170,13 +156,13 @@ public class PicturesManager {
 	public final int countDuplicates() {
 
 		// Sum the countDuplicates of each picture in the list.
-		return lstPictures.stream().collect(Collectors.summingInt(Picture::countDuplicates));
+		return lstPictures.stream().mapToInt(Picture::countDuplicates).sum();
 	}
 
 	public final long getTotalWastedSpace() {
 
 		// Sum the getWastedSpace of each picture in the list.
-		return lstPictures.stream().collect(Collectors.summingLong(Picture::getWastedSpace));
+		return lstPictures.stream().mapToLong(Picture::getWastedSpace).sum();
 	}
 
 	public final void addPicture(Picture p) {
@@ -202,7 +188,7 @@ public class PicturesManager {
 
 			Set<String> lstValuesForMetadata = mapValuesForMetadata.get(key);
 			if (lstValuesForMetadata == null) {
-				lstValuesForMetadata = new TreeSet<String>();
+				lstValuesForMetadata = new TreeSet<>();
 			}
 			if (lstAcceptedMetadata.contains(key)) {
 				lstValuesForMetadata.add(metadataForPicture.get(key));
@@ -216,14 +202,14 @@ public class PicturesManager {
 		return mapValuesForMetadata.keySet();
 	}
 
-	public final List<String> getMetadataKeys() {
+	/*public final List<String> getMetadataKeys() {
 
-		return new ArrayList<String>(mapValuesForMetadata.keySet());
-	}
+		return new ArrayList<>(mapValuesForMetadata.keySet());
+	}*/
 
 	public final List<String> getValuesForKey(String key) {
 
-		return new ArrayList<String>(mapValuesForMetadata.get(key));
+		return new ArrayList<>(mapValuesForMetadata.get(key));
 	}
 
 	/*public final void savePicturesInfo(Picture picture) throws IOException {

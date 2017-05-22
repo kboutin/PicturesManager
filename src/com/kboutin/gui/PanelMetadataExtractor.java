@@ -1,10 +1,10 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import com.kboutin.core.Picture;
+import com.kboutin.core.PicturesManager;
+import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.utils.GUIUtils;
+import com.kboutin.utils.StringUtils;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -12,12 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import com.kboutin.core.Picture;
-import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.PicturesFileFilter;
-import com.kboutin.utils.GUIUtils;
-import com.kboutin.utils.StringUtils;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
@@ -105,7 +104,6 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 			//pnlScanDir.updateDirToScan(f.getPath());
 			lblDirToScan.setText(f.getPath());
 			//metadataExtractor.scanDir(f);
-			picManager.setDirToScan(f);
 			picManager.scanDir(f);
 			//lstPictures = picManager.getPictures();
 			updatePicture(picManager.getCurrentPicture());

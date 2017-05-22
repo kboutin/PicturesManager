@@ -1,5 +1,14 @@
 package com.kboutin.core;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.kboutin.utils.FileUtils;
+import com.kboutin.utils.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,16 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.kboutin.utils.FileUtils;
-import com.kboutin.utils.StringUtils;
 
 public class Picture implements Comparable<Picture> {
 
@@ -37,14 +36,14 @@ public class Picture implements Comparable<Picture> {
 		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
 		this.hash = FileUtils.getFileMD5(fPicture);
-		this.lstDuplicates = new ArrayList<String>();
+		this.lstDuplicates = new ArrayList<>();
 		this.metadata = extractMetaData();
 	}
 
 	private Map<String, String> extractMetaData() {
 
 		logger.debug("Extracting metadata for file : " + filePath);
-		Map<String, String> mapMetaData = new TreeMap<String, String>();
+		Map<String, String> mapMetaData = new TreeMap<>();
 
 		Metadata metadata = null;
 		try {
@@ -55,7 +54,7 @@ public class Picture implements Comparable<Picture> {
 		}
 		if (metadata != null) {
 			for (Directory directory : metadata.getDirectories()) {
-				directory.getTags().stream().forEach(tag -> mapMetaData.put(tag.getTagName(), tag.getDescription()));
+				directory.getTags().forEach(tag -> mapMetaData.put(tag.getTagName(), tag.getDescription()));
 			}
 		}
 
@@ -78,7 +77,7 @@ public class Picture implements Comparable<Picture> {
 
 		StringBuilder s = new StringBuilder();
 
-		metadata.keySet().stream().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + StringUtils.NEW_LINE));
+		metadata.keySet().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + StringUtils.NEW_LINE));
 
 		return s.toString();
 	}

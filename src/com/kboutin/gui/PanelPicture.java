@@ -1,10 +1,7 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import com.kboutin.core.Picture;
+import com.kboutin.utils.GUIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -12,9 +9,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-
-import com.kboutin.core.Picture;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class PanelPicture extends JPanel {
 
@@ -41,7 +40,7 @@ public class PanelPicture extends JPanel {
 		}
 
 		File pictureFile = new File(p.getFilePath());
-		setBorder(GUIUtils.createEtchedTitledBorder(pictureFile != null ? pictureFile.getName() : ""));
+		setBorder(GUIUtils.createEtchedTitledBorder(pictureFile.getName()));
 		lblPicture.setIcon(getIconFromPicture(pictureFile));
 	}
 

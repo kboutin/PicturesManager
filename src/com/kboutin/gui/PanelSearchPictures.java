@@ -1,14 +1,11 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.util.List;
-import java.util.Set;
+import com.kboutin.core.Picture;
+import com.kboutin.core.PicturesFinder;
+import com.kboutin.core.PicturesManager;
+import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.utils.FileUtils;
+import com.kboutin.utils.GUIUtils;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -24,13 +21,16 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import com.kboutin.core.Picture;
-import com.kboutin.core.PicturesFinder;
-import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.PicturesFileFilter;
-import com.kboutin.utils.FileUtils;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class PanelSearchPictures extends JPanel implements ActionListener, ItemListener, ListSelectionListener {
 
@@ -168,7 +168,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
+			picManager.getValuesForKey(selectedCriteria).forEach(foundValue -> listModelValues.addElement(foundValue));
 		}
 
 		@Override
@@ -182,9 +182,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		private void scanDir(File f) {
 
 			if (f.isDirectory()) {
-				for (File subFile : f.listFiles()) {
-					scanDir(subFile);
-				}
+				Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
 			} else if (f.isFile()) {
 				if (FileUtils.isPicture(f)) {
 					int oldKeysSize = picManager.getMetadataKeySet().size();
@@ -194,9 +192,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 					Set<String> newKeys = picManager.getMetadataKeySet();
 					if (newKeys.size() > oldKeysSize) {
 						// Publish name only if a new metaData has been added to the list ...
-						for (String newKey : newKeys) {
-							publish(newKey);
-						}
+						newKeys.forEach(newKey -> publish(newKey));
 					}
 				}
 			}

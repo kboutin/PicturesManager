@@ -20,7 +20,7 @@ public class XMLUtils {
 
 	public static Map<String, String> loadPictureProperties(File fPicture) {
 
-		Map<String, String> picProperties = new TreeMap<String, String>();
+		Map<String, String> picProperties = new TreeMap<>();
 
 		return picProperties;
 	}
