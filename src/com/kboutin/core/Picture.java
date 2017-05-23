@@ -53,9 +53,9 @@ public class Picture implements Comparable<Picture> {
 			metadata = null;
 		}
 		if (metadata != null) {
-			for (Directory directory : metadata.getDirectories()) {
+			metadata.getDirectories().forEach(directory -> {
 				directory.getTags().forEach(tag -> mapMetaData.put(tag.getTagName(), tag.getDescription()));
-			}
+			});
 		}
 
 		return mapMetaData;
@@ -111,14 +111,12 @@ public class Picture implements Comparable<Picture> {
 
 	public final long removeDuplicate(String duplicate) {
 
-		boolean deleted = false;
 		long deletedSpace = 0;
 		if (lstDuplicates.contains(duplicate)) {
 
 			File tmp = new File(duplicate);
 			long fileSize = tmp.length();
-			deleted = tmp.delete();
-			if (deleted) {
+			if (tmp.delete()) {
 
 				deletedSpace = fileSize;
 				lstDuplicates.remove(duplicate);
@@ -138,8 +136,7 @@ public class Picture implements Comparable<Picture> {
 			File tmp = new File(duplicate);
 			long fileSize = tmp.length();
 			logger.debug("Removing " + tmp.getPath());
-			boolean deleted = tmp.delete();
-			if (deleted) {
+			if (tmp.delete()) {
 
 				logger.info("Removed " + tmp.getPath());
 				deletedSpace += fileSize;
