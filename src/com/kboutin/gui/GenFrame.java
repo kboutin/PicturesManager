@@ -14,25 +14,21 @@ public class GenFrame extends JFrame {
 	//private JComboBox cboPictures = new JComboBox(cboModel);
 	//private JList listOfPictures = new JList(listModel);
 
-	private JTabbedPane tabPane = new JTabbedPane();
-
-	// private PanelSearchPictures pnlSearchPictures = new
-	// PanelSearchPictures();
+	// private PanelSearchPictures pnlSearchPictures = new PanelSearchPictures();
 
 	// private PanelScanDir pnlScanDir = null;
 
-	private PanelMetadataExtractor pnlMetadataExtractor = null;
-	private PanelDupFinder pnlDuplicateFinder = null;
-
 	public GenFrame() {
 
+		JTabbedPane tabPane = new JTabbedPane();
 		setContentPane(tabPane);
 
-		pnlMetadataExtractor = new PanelMetadataExtractor();
-		pnlDuplicateFinder = new PanelDupFinder();
+		//PanelMetadataExtractor pnlMetadataExtractor = new PanelMetadataExtractor();
+		//PanelDupFinder pnlDuplicateFinder = new PanelDupFinder();
 
-		tabPane.addTab("MetadataExtractor", pnlMetadataExtractor);
-		tabPane.addTab("DuplicateFinder", pnlDuplicateFinder);
+		tabPane.addTab("MetadataExtractor", new PanelMetadataExtractor());
+		tabPane.addTab("DuplicateFinder", new PanelDupFinder());
+
 		// tabPane.addTab("PicturesFinder", pnlSearchPictures);
 
 		// Default Properties
