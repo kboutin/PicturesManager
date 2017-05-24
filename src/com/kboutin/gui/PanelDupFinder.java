@@ -1,12 +1,13 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileFilter;
-import java.util.List;
+import com.kboutin.core.Picture;
+import com.kboutin.core.PicturesManager;
+import com.kboutin.gui.filefilters.MoviesFileFilter;
+import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.utils.FileUtils;
+import com.kboutin.utils.GUIUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -21,16 +22,13 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.kboutin.core.Picture;
-import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.MoviesFileFilter;
-import com.kboutin.gui.filefilters.PicturesFileFilter;
-import com.kboutin.utils.FileUtils;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.List;
 
 public class PanelDupFinder extends JPanel implements ActionListener, ListSelectionListener {
 
@@ -114,7 +112,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	private long deleteDuplicatesForPicture(Picture p) {
 
-		return p.removeAllDuplicates();
+		return p.deleteDuplicates();
 	}
 
 	private long deleteAllDuplicates() {
@@ -232,9 +230,9 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		if (evt.getSource() == listPictures && !evt.getValueIsAdjusting()) {
 
 			Picture tmpPic = listPictures.getSelectedValue();
-			updateDuplicatesList(tmpPic);
 			if (tmpPic != null) {
 
+				updateDuplicatesList(tmpPic);
 				pnlPicture.updatePicture(tmpPic);
 				btnDeleteDuplicates.setEnabled(tmpPic.hasDuplicates()); // Enable the button only if needed ...
 

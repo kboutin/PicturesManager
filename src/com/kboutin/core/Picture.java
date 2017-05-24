@@ -2,7 +2,6 @@ package com.kboutin.core;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.StringUtils;
@@ -109,24 +108,7 @@ public class Picture implements Comparable<Picture> {
 		lstDuplicates.add(duplicate);
 	}
 
-	public final long removeDuplicate(String duplicate) {
-
-		long deletedSpace = 0;
-		if (lstDuplicates.contains(duplicate)) {
-
-			File tmp = new File(duplicate);
-			long fileSize = tmp.length();
-			if (tmp.delete()) {
-
-				deletedSpace = fileSize;
-				lstDuplicates.remove(duplicate);
-			}
-		}
-
-		return deletedSpace;
-	}
-
-	public final long removeAllDuplicates() {
+	public final long deleteDuplicates() {
 
 		long deletedSpace = 0;
 
@@ -135,10 +117,10 @@ public class Picture implements Comparable<Picture> {
 			String duplicate = iter.next();
 			File tmp = new File(duplicate);
 			long fileSize = tmp.length();
-			logger.debug("Removing " + tmp.getPath());
+			logger.debug("Deleting " + tmp.getPath());
 			if (tmp.delete()) {
 
-				logger.info("Removed " + tmp.getPath());
+				logger.info("Deleted " + tmp.getPath());
 				deletedSpace += fileSize;
 				iter.remove();
 			}

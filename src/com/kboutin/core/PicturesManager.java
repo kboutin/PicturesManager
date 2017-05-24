@@ -11,6 +11,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,22 +34,20 @@ public class PicturesManager {
 	private List<Picture> lstPictures = new ArrayList<>();
 
 	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
-	private static List<String> lstAcceptedMetadata = new ArrayList<>();
+	private static List<String> lstAcceptedMetadata = new ArrayList<>(
+		Arrays.asList(
+				"Aperture Value",
+				"F-Number",
+				"Focal Length",
+				"ISO Speed Ratings",
+				"Make",
+				"Model",
+				"Image Height",
+				"Image Width",
+				"Shutter Speed Value")
+	);
 
 	private int selectedIndex = 0;
-
-	static {
-
-		lstAcceptedMetadata.add("Aperture Value");
-		lstAcceptedMetadata.add("F-Number");
-		lstAcceptedMetadata.add("Focal Length");
-		lstAcceptedMetadata.add("ISO Speed Ratings");
-		lstAcceptedMetadata.add("Make");
-		lstAcceptedMetadata.add("Model");
-		lstAcceptedMetadata.add("Image Height");
-		lstAcceptedMetadata.add("Image Width");
-		lstAcceptedMetadata.add("Shutter Speed Value");
-	}
 
 	/**
 	 * @param args
@@ -103,9 +102,9 @@ public class PicturesManager {
 			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
 		} else if (f.isFile()) {
 			if(FileUtils.isPicture(f)) {
-				Picture p = new Picture(f);
-				addPicture(p);
-				addMetadataForPicture(p);
+				//Picture p = new Picture(f);
+				addPicture(new Picture(f));
+				//addMetadataForPicture(p);
 			}
 		}
 	}
@@ -201,11 +200,6 @@ public class PicturesManager {
 
 		return mapValuesForMetadata.keySet();
 	}
-
-	/*public final List<String> getMetadataKeys() {
-
-		return new ArrayList<>(mapValuesForMetadata.keySet());
-	}*/
 
 	public final List<String> getValuesForKey(String key) {
 

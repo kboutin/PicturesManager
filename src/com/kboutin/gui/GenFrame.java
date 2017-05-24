@@ -14,8 +14,6 @@ public class GenFrame extends JFrame {
 	//private JComboBox cboPictures = new JComboBox(cboModel);
 	//private JList listOfPictures = new JList(listModel);
 
-	// private PanelSearchPictures pnlSearchPictures = new PanelSearchPictures();
-
 	// private PanelScanDir pnlScanDir = null;
 
 	public GenFrame() {
@@ -23,13 +21,9 @@ public class GenFrame extends JFrame {
 		JTabbedPane tabPane = new JTabbedPane();
 		setContentPane(tabPane);
 
-		//PanelMetadataExtractor pnlMetadataExtractor = new PanelMetadataExtractor();
-		//PanelDupFinder pnlDuplicateFinder = new PanelDupFinder();
-
 		tabPane.addTab("MetadataExtractor", new PanelMetadataExtractor());
 		tabPane.addTab("DuplicateFinder", new PanelDupFinder());
-
-		// tabPane.addTab("PicturesFinder", pnlSearchPictures);
+		tabPane.addTab("PicturesFinder", new PanelSearchPictures());
 
 		// Default Properties
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
