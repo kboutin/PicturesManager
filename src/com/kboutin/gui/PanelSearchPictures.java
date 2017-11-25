@@ -1,19 +1,22 @@
 package com.kboutin.gui;
 
-import com.kboutin.core.Picture;
-import com.kboutin.core.PicturesFinder;
-import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.PicturesFileFilter;
-import com.kboutin.utils.FileUtils;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,16 +24,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+
+import com.kboutin.core.Picture;
+import com.kboutin.core.PicturesFinder;
+import com.kboutin.core.PicturesManager;
+import com.kboutin.utils.GUIUtils;
 
 public class PanelSearchPictures extends JPanel implements ActionListener, ItemListener, ListSelectionListener {
 
@@ -38,10 +36,6 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
 
 	private JPanel pnlContent = new JPanel(new BorderLayout());
 	private JPanel pnlSearch = new JPanel(new GridLayout(0, 2));
@@ -57,16 +51,11 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 	private PanelPicture pnlPicture = new PanelPicture();
 
 	private PicturesManager picManager = PicturesManager.getInstance();
+	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
 
 	public PanelSearchPictures() {
 
 		super(new BorderLayout());
-
-		btnChooseDir.addActionListener(this);
-
-		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
-		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
-		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 
 		lstValues.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lstValues.setVisibleRowCount(3);
@@ -83,14 +72,13 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		pnlContent.add(pnlSearch, BorderLayout.NORTH);
 		pnlContent.add(pnlVisu, BorderLayout.CENTER);
 
-		add(pnlDirToScan, BorderLayout.NORTH);
 		add(pnlContent, BorderLayout.CENTER);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if (e.getSource() == btnChooseDir) {
+		/*if (e.getSource() == btnChooseDir) {
 
 			JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home")));
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -106,7 +94,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				PicturesLister picturesLister = new PicturesLister(f);
 				picturesLister.execute();
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -118,7 +106,8 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
+			// Récupérer les valeurs du map pour la clé du selectedCriteria.
+			//picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
 		}
 	}
 
@@ -144,21 +133,23 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 	}
 
 	// Class to list pictures and display their names smoothly in the GUI
-	private class PicturesLister extends SwingWorker<Set<String>, String> {
+	public class PicturesLister extends SwingWorker<Set<String>, String> {
 
-		private File dirToScan = null;
+		//private File dirToScan = null;
 
-		public PicturesLister(File dirToScan) {
+		/*public PicturesLister(File dirToScan) {
 
 			this.dirToScan = dirToScan;
-		}
+		}*/
 
 		@Override
 		protected Set<String> doInBackground() throws Exception {
 
-			scanDir(dirToScan);
+			//scanDir(dirToScan);
+			scanPictures(picManager.getPictures());
 
-			return picManager.getMetadataKeySet();
+			//return picManager.getMetadataKeySet();
+			return mapValuesForMetadata.keySet();
 		}
 
 		@Override
@@ -167,19 +158,27 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 			if (!listModelValues.isEmpty()) {
 				listModelValues.clear();
 			}
-			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			picManager.getValuesForKey(selectedCriteria).forEach(foundValue -> listModelValues.addElement(foundValue));
+			/*String selectedCriteria = String.valueOf(cboBoxModelSearchCriteria.getSelectedItem());
+			// Récupérer le Set de valeurs de selectedCriteria, et le retourner ...
+			List<Entry<String, Set<String>>> entries = mapValuesForMetadata.entrySet().stream()
+					.filter(entry -> entry.getKey().equals(selectedCriteria))
+					.collect(Collectors.toList());
+			for (Entry<String, Set<String>> entry : entries) {
+
+			}*/
+			//.map(entry -> listModelValues.addElement(entry.getValue()));
+			//picManager.getValuesForKey(selectedCriteria).forEach(foundValue -> listModelValues.addElement(foundValue));
+
 		}
 
 		@Override
 		protected void process(List<String> chunks) {
 
-			for (String s : chunks) {
-				cboSearchCriteria.addItem(s);
-			}
+			//chunks.stream().forEach(cboSearchCriteria::addItem);
+			chunks.stream().forEach(s -> cboSearchCriteria.addItem(s));
 		}
 
-		private void scanDir(File f) {
+		/*private void scanDir(File f) {
 
 			if (f.isDirectory()) {
 				Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
@@ -195,6 +194,25 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 						newKeys.forEach(newKey -> publish(newKey));
 					}
 				}
+			}
+		}*/
+
+		private void scanPictures(List<Picture> lstPictures) {
+
+			lstPictures.forEach(pic -> extractMetadataFromPicture(pic));
+		}
+
+		private void extractMetadataFromPicture(Picture pic) {
+
+			for (Entry<String, String> entry : pic.getMetadata().entrySet()) {
+				Set<String> keySet = mapValuesForMetadata.get(entry.getKey());
+				if (keySet == null) {
+					keySet = new TreeSet<>();
+				}
+				if (keySet.add(entry.getValue())) {
+					publish(entry.getValue());
+				}
+				mapValuesForMetadata.put(entry.getKey(), keySet);
 			}
 		}
 	}

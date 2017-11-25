@@ -1,7 +1,10 @@
 package com.kboutin.gui;
 
-import com.kboutin.core.Picture;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -9,11 +12,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-import java.awt.BorderLayout;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+
+import com.kboutin.core.Picture;
+import com.kboutin.utils.GUIUtils;
 
 public class PanelPicture extends JPanel {
 
@@ -38,14 +39,12 @@ public class PanelPicture extends JPanel {
 		if (p == null) {
 			return;
 		}
-
-		File pictureFile = new File(p.getFilePath());
-		setBorder(GUIUtils.createEtchedTitledBorder(pictureFile.getName()));
-		lblPicture.setIcon(getIconFromPicture(pictureFile));
+		setBorder(GUIUtils.createEtchedTitledBorder(p.getFileName()));
+		lblPicture.setIcon(getIconFromPicture(p));
 	}
 
 	// FIXME KBO Fix case when picture is portrait side...
-	private Icon getIconFromPicture(File selectedPicture) {
+	/*private Icon getIconFromPicture(File selectedPicture) {
 
 		if (selectedPicture == null) {
 			return null;
@@ -60,6 +59,23 @@ public class PanelPicture extends JPanel {
 			e.printStackTrace();
 		}
 
+		return new ImageIcon(resizedPicture);
+	}*/
+
+	private Icon getIconFromPicture(Picture p) {
+
+		if (p == null) {
+			return null;
+		}
+		BufferedImage bufferedPicture = null;
+		Image resizedPicture = null;
+		try {
+			File selectedPicture = new File(p.getFilePath());
+			bufferedPicture = ImageIO.read(selectedPicture);
+			resizedPicture = bufferedPicture.getScaledInstance(lblPicture.getWidth(), -1, Image.SCALE_SMOOTH); // -1 is used to keep image ratio
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new ImageIcon(resizedPicture);
 	}
 }

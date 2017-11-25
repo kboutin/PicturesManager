@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.kboutin.utils.GUIUtils;
+import com.kboutin.utils.StringUtils;
 
 public class PanelScanDir extends JPanel {
 
@@ -16,38 +17,26 @@ public class PanelScanDir extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static PanelScanDir INSTANCE = null;
-
 	private JLabel lblDirToScan = new JLabel();
 	private JButton btnChooseDir = new JButton("...");
 
-	private PanelScanDir() {
+	public PanelScanDir() {
 
 		setLayout(new BorderLayout());
 
-		//btnChooseDir.addActionListener(genFrame);
+		btnChooseDir.setActionCommand(StringUtils.SCAN_DIR_COMMAND);
 
 		add(lblDirToScan, BorderLayout.CENTER);
 		add(btnChooseDir, BorderLayout.EAST);
 		setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 	}
 
-	public static PanelScanDir getInstance() {
-
-		if (INSTANCE == null) {
-			INSTANCE = new PanelScanDir();
-		}
-
-		return INSTANCE;
-	}
-
-	public final void addActionListener(ActionListener l) {
-
-		btnChooseDir.addActionListener(l);
-	}
-
 	public final void updateDirToScan(String dirToScanPath) {
 
 		lblDirToScan.setText(" " + dirToScanPath);
+	}
+
+	public final void addActionListener(ActionListener l) {
+		btnChooseDir.addActionListener(l);
 	}
 }

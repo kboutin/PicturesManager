@@ -46,7 +46,6 @@ public class FileUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return md5;
 	}
 
@@ -57,14 +56,12 @@ public class FileUtils {
 			while (dis.read() != -1)
 				;
 		}
-
 		return md.digest();
 	}
 
 	public static boolean isPicture(File f) {
 
 		String fileName = f.getName().toLowerCase();
-
 		return f.length() > StringUtils.KB &&
 				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
 						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
@@ -74,7 +71,6 @@ public class FileUtils {
 	public static boolean isMovie(File f) {
 
 		String fileName = f.getName().toLowerCase();
-
 		return f.length() > StringUtils.KB &&
 				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
 						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
@@ -112,7 +108,6 @@ public class FileUtils {
 			res += " Go";
 			break;
 		}
-
 		return res;
 	}
 }

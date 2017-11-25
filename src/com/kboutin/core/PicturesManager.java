@@ -1,23 +1,13 @@
 package com.kboutin.core;
 
-import com.drew.imaging.ImageProcessingException;
-import com.kboutin.gui.GenFrame;
-import com.kboutin.utils.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Stream;
+
+import com.drew.imaging.ImageProcessingException;
 
 /*
  * TODO KBO Simplify memory management for duplicates.
@@ -27,25 +17,25 @@ import java.util.stream.Stream;
 
 public class PicturesManager {
 
-	private final static Logger logger = LogManager.getLogger(PicturesManager.class);
+	//private final static Logger logger = LogManager.getLogger(PicturesManager.class);
 
 	private static PicturesManager INSTANCE = null;
 
 	private List<Picture> lstPictures = new ArrayList<>();
 
 	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
-	private static List<String> lstAcceptedMetadata = new ArrayList<>(
-		Arrays.asList(
-				"Aperture Value",
-				"F-Number",
-				"Focal Length",
-				"ISO Speed Ratings",
-				"Make",
-				"Model",
-				"Image Height",
-				"Image Width",
-				"Shutter Speed Value")
-	);
+	/*private static List<String> lstAcceptedMetadata = new ArrayList<>(
+			Arrays.asList(
+					"Aperture Value",
+					"F-Number",
+					"Focal Length",
+					"ISO Speed Ratings",
+					"Make",
+					"Model",
+					"Image Height",
+					"Image Width",
+					"Shutter Speed Value")
+			);*/
 
 	private int selectedIndex = 0;
 
@@ -54,7 +44,7 @@ public class PicturesManager {
 	 * @throws IOException
 	 * @throws ImageProcessingException
 	 */
-	public static void main(String[] args) throws ImageProcessingException, IOException {
+	/*public static void main(String[] args) throws ImageProcessingException, IOException {
 
 		//PicturesManager manager = new PicturesManager();
 		//manager.scanDir(new File(""));
@@ -81,7 +71,7 @@ public class PicturesManager {
 		}
 
 		new GenFrame();
-	}
+	}*/
 
 	private PicturesManager() {
 
@@ -96,7 +86,7 @@ public class PicturesManager {
 		return INSTANCE;
 	}
 
-	public final void scanDir(File f) {
+	/*public final void scanDir(File f) {
 
 		if (f.isDirectory()) {
 			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
@@ -107,23 +97,19 @@ public class PicturesManager {
 				//addMetadataForPicture(p);
 			}
 		}
-	}
+	}*/
 
 	public final List<Picture> getPictures() {
 
 		return lstPictures;
 	}
 
-	public Picture getCurrentPicture() {
+	public final Picture getCurrentPicture() {
 
-		if (!lstPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < lstPictures.size()) {
-			return lstPictures.get(selectedIndex);
-		}
-
-		return null;
+		return lstPictures.isEmpty() ? null : lstPictures.get(selectedIndex);
 	}
 
-	public Picture nextPicture() {
+	public final Picture nextPicture() {
 
 		selectedIndex++;
 		// Loop over the list...
@@ -143,7 +129,6 @@ public class PicturesManager {
 		if (selectedIndex < 0) {
 			selectedIndex = lstPictures.size() - 1;
 		}
-
 		return getCurrentPicture();
 	}
 
@@ -166,21 +151,14 @@ public class PicturesManager {
 
 	public final void addPicture(Picture p) {
 
-		boolean found = false;
-		for (Picture pic : lstPictures) {
-			if (p.equals(pic)) {
-
-				pic.addDuplicate(p.getFilePath());
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
+		if (lstPictures.contains(p)) {
+			lstPictures.get(lstPictures.indexOf(p)).addDuplicate(p.getFilePath());
+		} else {
 			lstPictures.add(p);
 		}
 	}
 
-	public final void addMetadataForPicture(Picture p) {
+	/*public final void addMetadataForPicture(Picture p) {
 
 		Map<String, String> metadataForPicture = p.getMetadata();
 		for (String key : metadataForPicture.keySet()) {
@@ -194,9 +172,9 @@ public class PicturesManager {
 				mapValuesForMetadata.put(key, lstValuesForMetadata);
 			}
 		}
-	}
+	}*/
 
-	public final Set<String> getMetadataKeySet() {
+	/*public final Set<String> getMetadataKeySet() {
 
 		return mapValuesForMetadata.keySet();
 	}
@@ -204,7 +182,7 @@ public class PicturesManager {
 	public final List<String> getValuesForKey(String key) {
 
 		return new ArrayList<>(mapValuesForMetadata.get(key));
-	}
+	}*/
 
 	/*public final void savePicturesInfo(Picture picture) throws IOException {
 

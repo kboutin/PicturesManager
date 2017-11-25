@@ -8,4 +8,6 @@ public class StringUtils {
 
 	public final static long KB = 1024;
 	public final static long MB = KB * KB;
+
+	public final static String SCAN_DIR_COMMAND = "ScanDir";
 }
