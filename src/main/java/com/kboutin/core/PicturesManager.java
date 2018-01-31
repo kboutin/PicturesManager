@@ -10,13 +10,11 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 /*
@@ -24,6 +22,7 @@ import java.util.stream.Stream;
  * Once it has been detected as duplicate of a file, only store its path
  * Map<Picture, String> : firstObject is the first file found, others are only locations where dup files are ...
  */
+
 public class PicturesManager {
 
 	private final static Logger logger = LogManager.getLogger(PicturesManager.class);
@@ -32,7 +31,8 @@ public class PicturesManager {
 
 	private List<Picture> lstPictures = new ArrayList<>();
 
-	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
+	//private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
+
 	private static List<String> lstAcceptedMetadata = new ArrayList<>(
 		Arrays.asList(
 				"Aperture Value",
@@ -69,24 +69,19 @@ public class PicturesManager {
 		// Set the look and feel to the default of the system...
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 
-		new GenFrame();
+		Path path = FileSystems.getDefault().getPath("/Users/kouikoui/Desktop/Kev/Photos/20171118_Anniversaire_Mounir");
+		FileUtils.scanDirectory(path);
+		//new GenFrame();
 	}
 
 	private PicturesManager() {
-
 	}
 
-	public final static PicturesManager getInstance() {
+	public static PicturesManager getInstance() {
 
 		if (INSTANCE == null) {
 			INSTANCE = new PicturesManager();
@@ -160,6 +155,11 @@ public class PicturesManager {
 	public final long getTotalWastedSpace() {
 
 		// Sum the getWastedSpace of each picture in the list.
+		//return lstPictures.stream().mapToLong(Picture::getWastedSpace).sum();
+		return getTotalWastedSpace(lstPictures);
+	}
+
+	public final long getTotalWastedSpace(List<Picture> lstPictures) {
 		return lstPictures.stream().mapToLong(Picture::getWastedSpace).sum();
 	}
 
@@ -179,7 +179,7 @@ public class PicturesManager {
 		}
 	}
 
-	public final void addMetadataForPicture(Picture p) {
+	/*public final void addMetadataForPicture(Picture p) {
 
 		Map<String, String> metadataForPicture = p.getMetadata();
 		for (String key : metadataForPicture.keySet()) {
@@ -190,12 +190,12 @@ public class PicturesManager {
 			}
 			if (lstAcceptedMetadata.contains(key)) {
 				lstValuesForMetadata.add(metadataForPicture.get(key));
-				mapValuesForMetadata.put(key, lstValuesForMetadata);
+				//mapValuesForMetadata.put(key, lstValuesForMetadata);
 			}
 		}
-	}
+	}*/
 
-	public final Set<String> getMetadataKeySet() {
+	/*public final Set<String> getMetadataKeySet() {
 
 		return mapValuesForMetadata.keySet();
 	}
@@ -203,7 +203,7 @@ public class PicturesManager {
 	public final List<String> getValuesForKey(String key) {
 
 		return new ArrayList<>(mapValuesForMetadata.get(key));
-	}
+	}*/
 
 	/*public final void savePicturesInfo(Picture picture) throws IOException {
 
