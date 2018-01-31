@@ -23,6 +23,7 @@ dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     compile 'org.apache.logging.log4j:log4j-api:2.10.0'
     compile 'org.apache.logging.log4j:log4j-core:2.10.0'
+    compile 'commons-codec:commons-codec:1.11'
     compile 'commons-io:commons-io:2.4'
     compile 'commons-net:commons-net:3.6'
     compile 'com.drewnoakes:metadata-extractor:2.6.2'
