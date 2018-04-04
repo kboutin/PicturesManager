@@ -22,13 +22,14 @@ public class PanelPicture extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private TitledBorder border;
 	private JLabel lblPicture = new JLabel();
-	private TitledBorder border = GUIUtils.createEtchedTitledBorder("");
 
 	public PanelPicture() {
 
 		super(new BorderLayout());
 
+		border = GUIUtils.createEtchedTitledBorder("");
 		setBorder(border);
 		add(lblPicture, BorderLayout.CENTER);
 	}
@@ -39,23 +40,30 @@ public class PanelPicture extends JPanel {
 			return;
 		}
 
-		File pictureFile = new File(p.getFilePath());
-		setBorder(GUIUtils.createEtchedTitledBorder(pictureFile.getName()));
-		lblPicture.setIcon(getIconFromPicture(pictureFile));
+		border.setTitle(p.getFileName());
+		lblPicture.setIcon(getIconFromPicture(p));
 	}
 
-	// FIXME KBO Fix case when picture is portrait side...
-	private Icon getIconFromPicture(File selectedPicture) {
+	private Icon getIconFromPicture(Picture selectedPicture) {
 
 		if (selectedPicture == null) {
 			return null;
 		}
 
-		BufferedImage bufferedPicture = null;
 		Image resizedPicture = null;
 		try {
-			bufferedPicture = ImageIO.read(selectedPicture);
-			resizedPicture = bufferedPicture.getScaledInstance(lblPicture.getWidth(), -1, Image.SCALE_SMOOTH); // -1 is used to keep image ratio
+			BufferedImage bufferedPicture = ImageIO.read(new File(selectedPicture.getFilePath()));
+			switch(selectedPicture.getOrientation()) {
+				case PORTRAIT:
+					// TODO KBO : Center picture in PORTRAIT MODE.
+					resizedPicture = bufferedPicture.getScaledInstance(-1, lblPicture.getHeight(), Image.SCALE_SMOOTH); // -1 is used to keep image ratio
+					break;
+				case LANDSCAPE:
+					resizedPicture = bufferedPicture.getScaledInstance(lblPicture.getWidth(), -1, Image.SCALE_SMOOTH); // -1 is used to keep image ratio
+					break;
+				default:
+					resizedPicture = bufferedPicture.getScaledInstance(lblPicture.getWidth(), -1, Image.SCALE_SMOOTH); // -1 is used to keep image ratio
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

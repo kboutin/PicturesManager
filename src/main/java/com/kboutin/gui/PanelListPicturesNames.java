@@ -40,7 +40,7 @@ public class PanelListPicturesNames extends JPanel {
 
 	public final void updateList(List<Picture> lstPictures) {
 
-		lstPictures.stream().forEach(picture -> listModelPicture.addElement(picture));
+		lstPictures.forEach(picture -> listModelPicture.addElement(picture));
 	}
 
 	/*

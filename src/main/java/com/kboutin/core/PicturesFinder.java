@@ -23,17 +23,16 @@ public class PicturesFinder {
 		logger.debug("Searching pictures having " + value + " for " + criteria);
 		List<Picture> filteredPictures = new ArrayList<>();
 
-		for (Picture p : lstPictures) {
-
-			Map<String, String> metaData = p.getMetadata();
+		lstPictures.stream().forEach(picture -> {
+			Map<String, String> metaData = picture.getMetadata();
 			for (String key : metaData.keySet()) {
 
 				if (key.equals(criteria) && metaData.get(key).equals(value)) {
-					logger.debug("Found picture " + p.getFilePath());
-					filteredPictures.add(p);
+					logger.debug("Found picture " + picture.getFilePath());
+					filteredPictures.add(picture);
 				}
 			}
-		}
+		});
 
 		return filteredPictures;
 	}

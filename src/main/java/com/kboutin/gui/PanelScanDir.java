@@ -1,13 +1,11 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
+import com.kboutin.utils.GUIUtils;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
 
 public class PanelScanDir extends JPanel {
 
@@ -41,7 +39,7 @@ public class PanelScanDir extends JPanel {
 		return INSTANCE;
 	}
 
-	public final void addActionListener(ActionListener l) {
+	/*public final void addActionListener(ActionListener l) {
 
 		btnChooseDir.addActionListener(l);
 	}
@@ -49,5 +47,5 @@ public class PanelScanDir extends JPanel {
 	public final void updateDirToScan(String dirToScanPath) {
 
 		lblDirToScan.setText(" " + dirToScanPath);
-	}
+	}*/
 }

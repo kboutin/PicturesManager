@@ -1,20 +1,16 @@
 package com.kboutin.core;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Metadata;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kboutin.utils.FileUtils;
-import com.kboutin.utils.StringUtils;
+import com.kboutin.utils.PictureUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Picture implements Comparable<Picture> {
 
@@ -22,10 +18,14 @@ public class Picture implements Comparable<Picture> {
 
 	private String filePath = null;
 	private String hash = null;
-	private List<String> lstDuplicates = null;
+	private String size;
+	private List<String> duplicates = null;
 	private Map<String, String> metadata = null;
+	private Orientation orientation = null;
 
-	//private MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
+	public Picture() {
+		// Default Constructor needed for jaxb
+	}
 
 	public Picture(File fPicture) {
 
@@ -34,12 +34,13 @@ public class Picture implements Comparable<Picture> {
 		}
 		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
-		this.hash = FileUtils.getFileMD5(fPicture);
-		this.lstDuplicates = new ArrayList<>();
-		this.metadata = extractMetaData();
+		this.hash = FileUtils.getSHA1Hash(fPicture);
+		this.duplicates = new ArrayList<>();
+		this.metadata = PictureUtils.extractMetaData(this.filePath);
+		this.orientation = this.getHeight() > this.getWidth() ? Orientation.PORTRAIT : Orientation.LANDSCAPE;
 	}
 
-	private Map<String, String> extractMetaData() {
+	/*private Map<String, String> extractMetaData() {
 
 		logger.debug("Extracting metadata for file : " + filePath);
 		Map<String, String> mapMetaData = new TreeMap<>();
@@ -58,61 +59,90 @@ public class Picture implements Comparable<Picture> {
 		}
 
 		return mapMetaData;
-	}
+	}*/
 
 	public final String getFilePath() {
 		return filePath;
+	}
+
+	@JsonIgnore
+	public final String getFileName() {
+		return filePath.substring(filePath.lastIndexOf(FileUtils.FILE_SEP) + 1);
 	}
 
 	public final String getSize() {
 		return FileUtils.getReadableFileSize(new File(filePath));
 	}
 
+	private int getHeight() {
+		String height = metadata.get("Exif Image Height");
+		height = height.substring(0, height.indexOf(" ")).trim();
+		return Integer.parseInt(height);
+	}
+
+	private int getWidth() {
+		String width = metadata.get("Exif Image Width");
+		width = width.substring(0, width.indexOf(" ")).trim();
+		return Integer.parseInt(width);
+	}
+
+	public final String getHash() {
+		return this.hash;
+	}
+
 	public final Map<String, String> getMetadata() {
 		return metadata;
 	}
 
+	@JsonIgnore
 	public final String getMetadataAsString() {
 
 		StringBuilder s = new StringBuilder();
 
-		metadata.keySet().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + StringUtils.NEW_LINE));
+		metadata.keySet().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + FileUtils.NEW_LINE));
 
 		return s.toString();
 	}
 
-	public final List<String> getDuplicates() {
-
-		return lstDuplicates;
+	public Orientation getOrientation() {
+		return orientation;
 	}
 
+	public final List<String> getDuplicates() {
+
+		return duplicates;
+	}
+
+	@JsonIgnore
 	public final long getWastedSpace() {
 
 		long fileSize = new File(filePath).length();
 
-		return fileSize * lstDuplicates.size();
+		return fileSize * duplicates.size();
 	}
 
+	@JsonIgnore
 	public final int countDuplicates() {
 
-		return lstDuplicates.size();
+		return duplicates.size();
 	}
 
+	@JsonIgnore
 	public final boolean hasDuplicates() {
 
-		return lstDuplicates.size() > 0;
+		return duplicates.size() > 0;
 	}
 
 	public final void addDuplicate(String duplicate) {
 
-		lstDuplicates.add(duplicate);
+		duplicates.add(duplicate);
 	}
 
 	public final long deleteDuplicates() {
 
 		long deletedSpace = 0;
 
-		for (Iterator<String> iter = lstDuplicates.iterator(); iter.hasNext(); ) {
+		for (Iterator<String> iter = duplicates.iterator(); iter.hasNext(); ) {
 
 			String duplicate = iter.next();
 			File tmp = new File(duplicate);
@@ -131,8 +161,7 @@ public class Picture implements Comparable<Picture> {
 
 	public final void printMetaData() {
 
-		metadata.keySet().stream()
-				.forEach(category -> System.out.format("[%s] -> %s\n", category, metadata.get(category)));
+		metadata.keySet().forEach(category -> System.out.format("[%s] -> %s\n", category, metadata.get(category)));
 	}
 
 	public final void printInfos() {
@@ -141,9 +170,7 @@ public class Picture implements Comparable<Picture> {
 		logger.debug("fileSize : " + new File(filePath).length());
 		if (hasDuplicates()) {
 			logger.debug("Duplicated Locations...");
-			for (String duplicatedLocation : lstDuplicates) {
-				logger.debug("\t" + duplicatedLocation);
-			}
+			duplicates.forEach(duplicatedLocation -> logger.debug("\t" + duplicatedLocation));
 		}
 	}
 
@@ -160,8 +187,18 @@ public class Picture implements Comparable<Picture> {
 	}
 
 	@Override
+	public int hashCode() {
+		return hash.hashCode();
+	}
+
+	@Override
 	public final String toString() {
 
 		return this.filePath;
+	}
+
+	public enum Orientation {
+		LANDSCAPE,
+		PORTRAIT
 	}
 }

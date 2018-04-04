@@ -10,10 +10,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,9 +28,7 @@ public class PicturesManager {
 
 	private List<Picture> lstPictures = new ArrayList<>();
 
-	//private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
-
-	private static List<String> lstAcceptedMetadata = new ArrayList<>(
+	/*private static List<String> lstAcceptedMetadata = new ArrayList<>(
 		Arrays.asList(
 				"Aperture Value",
 				"F-Number",
@@ -44,7 +39,7 @@ public class PicturesManager {
 				"Image Height",
 				"Image Width",
 				"Shutter Speed Value")
-	);
+	);*/
 
 	private int selectedIndex = 0;
 
@@ -73,12 +68,11 @@ public class PicturesManager {
 			e.printStackTrace();
 		}
 
-		Path path = FileSystems.getDefault().getPath("/Users/kouikoui/Desktop/Kev/Photos/20171118_Anniversaire_Mounir");
-		FileUtils.scanDirectory(path);
-		//new GenFrame();
+		new GenFrame();
 	}
 
 	private PicturesManager() {
+
 	}
 
 	public static PicturesManager getInstance() {
@@ -96,7 +90,6 @@ public class PicturesManager {
 			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
 		} else if (f.isFile()) {
 			if(FileUtils.isPicture(f)) {
-				//Picture p = new Picture(f);
 				addPicture(new Picture(f));
 				//addMetadataForPicture(p);
 			}
@@ -108,6 +101,25 @@ public class PicturesManager {
 		return lstPictures;
 	}
 
+	public final void setPictures(List<Picture> lstPictures) {
+
+		this.lstPictures = lstPictures;
+	}
+
+	public final Picture getPictureByName(String pictureName) {
+		return lstPictures.stream()
+				.filter(picture -> picture.getFileName().equals(pictureName))
+				.findFirst()
+				.orElse(null);
+	}
+
+	public final Picture getPictureByHash(String hash) {
+		return lstPictures.stream()
+				.filter(picture -> picture.getHash().equals(hash))
+				.findFirst()
+				.orElse(null);
+	}
+
 	public Picture getCurrentPicture() {
 
 		if (!lstPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < lstPictures.size()) {
@@ -115,6 +127,18 @@ public class PicturesManager {
 		}
 
 		return null;
+	}
+
+	public Picture firstPicture() {
+
+		selectedIndex = 0;
+		return getCurrentPicture();
+	}
+
+	public Picture lastPicture() {
+
+		selectedIndex = lstPictures.size() - 1;
+		return getCurrentPicture();
 	}
 
 	public Picture nextPicture() {
@@ -163,20 +187,27 @@ public class PicturesManager {
 		return lstPictures.stream().mapToLong(Picture::getWastedSpace).sum();
 	}
 
-	public final void addPicture(Picture p) {
+	public final boolean addPicture(Picture p) {
 
 		boolean found = false;
-		for (Picture pic : lstPictures) {
+		if (lstPictures.contains(p)) {
+			lstPictures.get(lstPictures.indexOf(p)).addDuplicate(p.getFilePath());
+			found = true;
+		}
+		/*for (Picture pic : lstPictures) {
 			if (p.equals(pic)) {
 
 				pic.addDuplicate(p.getFilePath());
 				found = true;
 				break;
 			}
-		}
+		}*/
 		if (!found) {
 			lstPictures.add(p);
+			return true;
 		}
+
+		return false;
 	}
 
 	/*public final void addMetadataForPicture(Picture p) {

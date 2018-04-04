@@ -1,16 +1,15 @@
 package com.kboutin.utils;
 
 import com.kboutin.core.Picture;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -19,6 +18,13 @@ import java.util.stream.Stream;
 public class FileUtils {
 
 	private final static Logger logger = LogManager.getLogger(FileUtils.class);
+
+	public final static String NEW_LINE = System.getProperty("line.separator");
+	public final static String FILE_SEP = System.getProperty("file.separator");
+	public final static String USER_HOME = System.getProperty("user.home");
+
+	private final static long ONE_KB = 1024;
+	public final static long ONE_MB = ONE_KB * ONE_KB;
 
 	public static void scanDirectory(Path path) throws IOException {
 
@@ -33,7 +39,8 @@ public class FileUtils {
 		} else if (f.isFile()) {
 			if(FileUtils.isPicture(f)) {
 				Picture p = new Picture(f);
-				//addPicture(new Picture(f));
+				lstPictures.add(p);
+				//addPicture(p);
 				//addMetadataForPicture(p);
 			}
 		}
@@ -70,22 +77,35 @@ public class FileUtils {
 		return md5;
 	}
 
-	public static byte[] calculateMD5(Path file) throws NoSuchAlgorithmException, IOException {
+	public static String getMD5Hash(File f) {
 
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		try (InputStream is = Files.newInputStream(file); DigestInputStream dis = new DigestInputStream(is, md)) {
-			while (dis.read() != -1)
-				;
+		String md5Hash = null;
+		try {
+			md5Hash = DigestUtils.md5Hex(new FileInputStream(f));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		return md.digest();
+		return md5Hash;
+	}
+
+	public static String getSHA1Hash(File f) {
+
+		String sha1Hash = null;
+		try {
+			sha1Hash = DigestUtils.sha1Hex(new FileInputStream(f));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return sha1Hash;
 	}
 
 	public static boolean isPicture(File f) {
 
 		String fileName = f.getName().toLowerCase();
 
-		return f.length() > StringUtils.KB &&
+		return f.length() > ONE_KB &&
 				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
 						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
 						|| fileName.endsWith(".tiff"));
@@ -95,7 +115,7 @@ public class FileUtils {
 
 		String fileName = f.getName().toLowerCase();
 
-		return f.length() > StringUtils.KB &&
+		return f.length() > ONE_KB &&
 				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
 						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
 						|| fileName.endsWith(".mov"));
@@ -108,7 +128,7 @@ public class FileUtils {
 
 	public static String getReadableFileSize(long size) {
 
-		String res = null;
+		String res;
 		int unit = 0;
 		double totalSize = size;
 

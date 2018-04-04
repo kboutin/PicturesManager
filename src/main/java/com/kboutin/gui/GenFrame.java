@@ -2,6 +2,7 @@ package com.kboutin.gui;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.WindowConstants;
 
 public class GenFrame extends JFrame {
 
@@ -26,7 +27,7 @@ public class GenFrame extends JFrame {
 		tabPane.addTab("PicturesFinder", new PanelSearchPictures());
 
 		// Default Properties
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle("PicturesManager");
 		setSize(getToolkit().getScreenSize());
 		setLocationRelativeTo(null);
