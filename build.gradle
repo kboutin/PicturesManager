@@ -52,5 +52,5 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'PicturesManager'
+mainClassName = 'com.kboutin.core.PicturesManager'
 

@@ -19,7 +19,6 @@ import java.util.stream.Stream;
  * Once it has been detected as duplicate of a file, only store its path
  * Map<Picture, String> : firstObject is the first file found, others are only locations where dup files are ...
  */
-
 public class PicturesManager {
 
 	private final static Logger logger = LogManager.getLogger(PicturesManager.class);
@@ -48,7 +47,7 @@ public class PicturesManager {
 	 * @throws IOException
 	 * @throws ImageProcessingException
 	 */
-	public static void main(String[] args) throws ImageProcessingException, IOException {
+	public static void main(String[] args) {
 
 		//PicturesManager manager = new PicturesManager();
 		//manager.scanDir(new File(""));
@@ -88,11 +87,9 @@ public class PicturesManager {
 
 		if (f.isDirectory()) {
 			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
-		} else if (f.isFile()) {
-			if(FileUtils.isPicture(f)) {
-				addPicture(new Picture(f));
-				//addMetadataForPicture(p);
-			}
+		} else if (FileUtils.isPicture(f)) {
+			addPicture(new Picture(f));
+			//addMetadataForPicture(p);
 		}
 	}
 
@@ -183,7 +180,7 @@ public class PicturesManager {
 		return getTotalWastedSpace(lstPictures);
 	}
 
-	public final long getTotalWastedSpace(List<Picture> lstPictures) {
+	private long getTotalWastedSpace(List<Picture> lstPictures) {
 		return lstPictures.stream().mapToLong(Picture::getWastedSpace).sum();
 	}
 
