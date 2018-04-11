@@ -43,6 +43,7 @@ public class PanelPicture extends JPanel {
 			border.setTitle(p.getFileName());
 			lblPicture.setIcon(getIconFromPicture(p));
 		}
+		repaint();
 	}
 
 	private Icon getIconFromPicture(Picture selectedPicture) {
