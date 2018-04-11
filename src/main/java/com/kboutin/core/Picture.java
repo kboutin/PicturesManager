@@ -39,7 +39,7 @@ public class Picture implements Comparable<Picture> {
 		}
 		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
-		this.hash = FileUtils.getSHA1Hash(fPicture);
+		this.hash = FileUtils.getFileSHA1(fPicture);
 		this.duplicates = new ArrayList<>();
 		this.metadata = PictureUtils.extractMetaData(this.filePath);
 		this.orientation = this.getHeight() > this.getWidth() ? Orientation.PORTRAIT : Orientation.LANDSCAPE;
