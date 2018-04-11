@@ -119,7 +119,7 @@ public class PicturesManager {
 
 	public Picture getCurrentPicture() {
 
-		if (!lstPictures.isEmpty() && selectedIndex >= 0 && selectedIndex < lstPictures.size()) {
+		if (!lstPictures.isEmpty()) {
 			return lstPictures.get(selectedIndex);
 		}
 
@@ -169,8 +169,8 @@ public class PicturesManager {
 
 	public final int countDuplicates() {
 
-		// Sum the countDuplicates of each picture in the list.
-		return lstPictures.stream().mapToInt(Picture::countDuplicates).sum();
+		// Sum the number of duplicates of each picture in the list.
+		return lstPictures.stream().mapToInt(p -> p.getDuplicates().size()).sum();
 	}
 
 	public final long getTotalWastedSpace() {

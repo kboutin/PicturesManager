@@ -231,7 +231,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 				updateDuplicatesList(tmpPic);
 				pnlPicture.updatePicture(tmpPic);
-				btnDeleteDuplicates.setEnabled(tmpPic.hasDuplicates()); // Enable the button only if needed ...
+				btnDeleteDuplicates.setEnabled(!tmpPic.getDuplicates().isEmpty()); // Enable the button only if needed ...
 			} else {
 
 				btnDeleteDuplicates.setEnabled(false);

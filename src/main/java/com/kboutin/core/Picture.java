@@ -3,6 +3,8 @@ package com.kboutin.core;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.PictureUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,17 +13,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class Picture implements Comparable<Picture> {
 
 	private final static Logger logger = LogManager.getLogger(Picture.class);
 
-	private String filePath = null;
-	private String hash = null;
+	private String filePath;
+	private String hash;
 	private String size;
-	private List<String> duplicates = null;
-	private Map<String, String> metadata = null;
-	private Orientation orientation = null;
+	private List<String> duplicates;
+	private Map<String, String> metadata;
+	private Orientation orientation;
 
 	public Picture() {
 		// Default Constructor needed for jaxb
@@ -61,10 +66,6 @@ public class Picture implements Comparable<Picture> {
 		return mapMetaData;
 	}*/
 
-	public final String getFilePath() {
-		return filePath;
-	}
-
 	@JsonIgnore
 	public final String getFileName() {
 		return filePath.substring(filePath.lastIndexOf(FileUtils.FILE_SEP) + 1);
@@ -86,31 +87,17 @@ public class Picture implements Comparable<Picture> {
 		return Integer.parseInt(width);
 	}
 
-	public final String getHash() {
-		return this.hash;
-	}
-
-	public final Map<String, String> getMetadata() {
-		return metadata;
-	}
-
 	@JsonIgnore
 	public final String getMetadataAsString() {
 
-		StringBuilder s = new StringBuilder();
+		/*StringBuilder s = new StringBuilder();
 
 		metadata.keySet().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + FileUtils.NEW_LINE));
 
-		return s.toString();
-	}
-
-	public Orientation getOrientation() {
-		return orientation;
-	}
-
-	public final List<String> getDuplicates() {
-
-		return duplicates;
+		return s.toString();*/
+		return metadata.keySet().stream()
+				.map(key -> "[" + key + "] -> " + metadata.get(key))
+				.collect(Collectors.joining(FileUtils.NEW_LINE));
 	}
 
 	@JsonIgnore
@@ -119,18 +106,6 @@ public class Picture implements Comparable<Picture> {
 		long fileSize = new File(filePath).length();
 
 		return fileSize * duplicates.size();
-	}
-
-	@JsonIgnore
-	public final int countDuplicates() {
-
-		return duplicates.size();
-	}
-
-	@JsonIgnore
-	public final boolean hasDuplicates() {
-
-		return duplicates.size() > 0;
 	}
 
 	public final void addDuplicate(String duplicate) {
@@ -168,7 +143,7 @@ public class Picture implements Comparable<Picture> {
 
 		logger.debug("Picture with filePath : " + filePath);
 		logger.debug("fileSize : " + new File(filePath).length());
-		if (hasDuplicates()) {
+		if (duplicates != null && !duplicates.isEmpty()) {
 			logger.debug("Duplicated Locations...");
 			duplicates.forEach(duplicatedLocation -> logger.debug("\t" + duplicatedLocation));
 		}

@@ -37,11 +37,12 @@ public class PanelPicture extends JPanel {
 	public final void updatePicture(Picture p) {
 
 		if (p == null) {
-			return;
+			border.setTitle("");
+			lblPicture.setIcon(null);
+		} else {
+			border.setTitle(p.getFileName());
+			lblPicture.setIcon(getIconFromPicture(p));
 		}
-
-		border.setTitle(p.getFileName());
-		lblPicture.setIcon(getIconFromPicture(p));
 	}
 
 	private Icon getIconFromPicture(Picture selectedPicture) {

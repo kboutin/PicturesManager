@@ -9,17 +9,17 @@ import java.io.File;
  * 
  * @author kboutin
  */
-public class PicturesFileFilter extends FileFilter implements java.io.FileFilter {
+public class JSONFileFilter extends FileFilter implements java.io.FileFilter {
 
 	@Override
 	public boolean accept(File f) {
 
-		return f.isDirectory() || FileUtils.isPicture(f);
+		return FileUtils.isJSONFile(f);
 	}
 
 	@Override
 	public String getDescription() {
 
-		return "Pictures Files (*.jpg, *.png)";
+		return "JSON Files (*.json)";
 	}
 }

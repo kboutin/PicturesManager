@@ -17,6 +17,6 @@ public class MoviesFileFilter extends FileFilter implements java.io.FileFilter {
 	@Override
 	public String getDescription() {
 
-		return "Movies Filter (*.avi, *.mp4, *.mpg, *.mov)";
+		return "Movies Files (*.avi, *.mp4, *.mpg, *.mov)";
 	}
 }

@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FileUtilsTest {
 
     @Test
-    @DisplayName("MD5 Speed")
-    public final void testSpeedMD5Hash() {
+    @DisplayName("getFileMD5 Speed")
+    public final void testSpeedGetFileMD5() {
 
     	File f = new File(getClass().getClassLoader().getResource("FeuilleDeFiguier.jpg").getFile());
     	assertTrue(f.exists());
@@ -24,25 +24,239 @@ public class FileUtilsTest {
         );
 
         long start = System.currentTimeMillis();
-        String md5Hash3 = FileUtils.getMD5Hash(f);
+        String md5Hash = FileUtils.getFileMD5(f);
         long duration = System.currentTimeMillis() - start;
-        System.out.println("getMD5Hash - Hash : " + md5Hash3 + " - Duration : " + duration);
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
 
         start = System.currentTimeMillis();
-        String md5Hash1 = FileUtils.getFileMD5(f);
+        md5Hash = FileUtils.getFileMD5(f);
         duration = System.currentTimeMillis() - start;
-        System.out.println("getFileMD5 - Hash : " + md5Hash1 + " - Duration : " + duration);
-
-        assertEquals(md5Hash1, md5Hash3);
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
 
         start = System.currentTimeMillis();
-        md5Hash3 = FileUtils.getMD5Hash(f);
+        md5Hash = FileUtils.getFileMD5(f);
         duration = System.currentTimeMillis() - start;
-        System.out.println("getMD5Hash - Hash : " + md5Hash3 + " - Duration : " + duration);
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
 
         start = System.currentTimeMillis();
-        md5Hash1 = FileUtils.getFileMD5(f);
+        md5Hash = FileUtils.getFileMD5(f);
         duration = System.currentTimeMillis() - start;
-        System.out.println("getFileMD5 - Hash : " + md5Hash1 + " - Duration : " + duration);
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getFileMD5(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileMD5 - Hash : " + md5Hash + " - Duration : " + duration);
     }
+
+    /*@Test
+    @DisplayName("getMD5Hash Speed")
+    public final void testSpeedGetMD5Hash() {
+
+        File f = new File(getClass().getClassLoader().getResource("FeuilleDeFiguier.jpg").getFile());
+        assertTrue(f.exists());
+        assertAll("TestFile",
+                () -> assertEquals(5000153, f.length()),
+                () -> assertTrue(f.getName().endsWith(".jpg"))
+        );
+
+        long start = System.currentTimeMillis();
+        String md5Hash = FileUtils.getMD5Hash(f);
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        md5Hash = FileUtils.getMD5Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getMD5Hash - Hash : " + md5Hash + " - Duration : " + duration);
+    }*/
+
+    @Test
+    @DisplayName("getFileSHA1 Speed")
+    public final void testSpeedGetFileSHA1() {
+
+        File f = new File(getClass().getClassLoader().getResource("FeuilleDeFiguier.jpg").getFile());
+        assertTrue(f.exists());
+        assertAll("TestFile",
+                () -> assertEquals(5000153, f.length()),
+                () -> assertTrue(f.getName().endsWith(".jpg"))
+        );
+
+        long start = System.currentTimeMillis();
+        String sha1Hash = FileUtils.getFileSHA1(f);
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getFileSHA1(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getFileSHA1 - Hash : " + sha1Hash + " - Duration : " + duration);
+    }
+
+    /*@Test
+    @DisplayName("getSHA1Hash Speed")
+    public final void testSpeedGetSHA1Hash() {
+
+        File f = new File(getClass().getClassLoader().getResource("FeuilleDeFiguier.jpg").getFile());
+        assertTrue(f.exists());
+        assertAll("TestFile",
+                () -> assertEquals(5000153, f.length()),
+                () -> assertTrue(f.getName().endsWith(".jpg"))
+        );
+
+        long start = System.currentTimeMillis();
+        String sha1Hash = FileUtils.getSHA1Hash(f);
+        long duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+
+        start = System.currentTimeMillis();
+        sha1Hash = FileUtils.getSHA1Hash(f);
+        duration = System.currentTimeMillis() - start;
+        System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
+    }*/
 }

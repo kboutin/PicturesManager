@@ -10,8 +10,6 @@ import java.util.List;
 
 public class JSONUtils {
 
-	private static ObjectMapper objectMapper = new ObjectMapper();
-
 	private JSONUtils() {
 		// Hide public constructor to use static methods.
 	}
@@ -19,7 +17,7 @@ public class JSONUtils {
 	public static void savePictures(List<Picture> lstPictures, String fileName) {
 
 		File fPicture = new File(fileName);
-		//lstPictures.forEach(picture -> {
+		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			objectMapper.writeValue(fPicture, lstPictures);
 		} catch (IOException e) {
@@ -30,6 +28,7 @@ public class JSONUtils {
 	public static List<Picture> readFile(String fileName) {
 
 		File fPicture = new File(fileName);
+		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return Arrays.asList(objectMapper.readValue(fPicture, Picture[].class));
 		} catch (IOException e) {

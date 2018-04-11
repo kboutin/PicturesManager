@@ -4,7 +4,6 @@ import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesFinder;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
-import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
 
 import javax.swing.ComboBoxModel;
@@ -18,7 +17,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -29,8 +27,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 public class PanelSearchPictures extends JPanel implements ActionListener, ItemListener, ListSelectionListener {
 
@@ -39,19 +35,13 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
 	private JLabel lblDirToScan = new JLabel();
 	private JButton btnChooseDir = new JButton("...");
 
-	private JPanel pnlContent = new JPanel(new BorderLayout());
-	private JPanel pnlSearch = new JPanel(new GridLayout(0, 2));
-	private JPanel pnlVisu = new JPanel(new BorderLayout());
-
-	private ComboBoxModel<String> cboBoxModelSearchCriteria = new DefaultComboBoxModel<String>();
-	private JComboBox<String> cboSearchCriteria = new JComboBox<String>(cboBoxModelSearchCriteria);
-	private DefaultListModel<String> listModelValues = new DefaultListModel<String>();
-	private JList<String> lstValues = new JList<String>(listModelValues);
-	private JScrollPane scrollLstValues = new JScrollPane(lstValues);
+	private ComboBoxModel<String> cboBoxModelSearchCriteria = new DefaultComboBoxModel<>();
+	private JComboBox<String> cboSearchCriteria = new JComboBox<>(cboBoxModelSearchCriteria);
+	private DefaultListModel<String> listModelValues = new DefaultListModel<>();
+	private JList<String> lstValues = new JList<>(listModelValues);
 
 	private PanelListPicturesNames pnlListPictures = new PanelListPicturesNames();
 	private PanelPicture pnlPicture = new PanelPicture();
@@ -63,7 +53,9 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		super(new BorderLayout());
 
 		btnChooseDir.addActionListener(this);
+		pnlListPictures.addListSelectionListener(this);
 
+		JPanel pnlDirToScan = new JPanel(new BorderLayout());
 		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
 		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
 		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
@@ -72,14 +64,18 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		lstValues.setVisibleRowCount(3);
 		cboSearchCriteria.addItemListener(this);
 		lstValues.addListSelectionListener(this);
+
+		JScrollPane scrollLstValues = new JScrollPane(lstValues);
+		JPanel pnlSearch = new JPanel(new GridLayout(0, 2));
 		pnlSearch.add(cboSearchCriteria);
 		pnlSearch.add(scrollLstValues);
 		pnlSearch.setBorder(GUIUtils.createEtchedTitledBorder("Criteres de recherche"));
 
-		pnlListPictures.addListSelectionListener(this);
+		JPanel pnlVisu = new JPanel(new BorderLayout());
 		pnlVisu.add(pnlListPictures, BorderLayout.WEST);
 		pnlVisu.add(pnlPicture, BorderLayout.CENTER);
 
+		JPanel pnlContent = new JPanel(new BorderLayout());
 		pnlContent.add(pnlSearch, BorderLayout.NORTH);
 		pnlContent.add(pnlVisu, BorderLayout.CENTER);
 

@@ -2,11 +2,14 @@ package com.kboutin.gui;
 
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
+import com.kboutin.gui.filefilters.JSONFileFilter;
 import com.kboutin.gui.filefilters.MoviesFileFilter;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
 import com.kboutin.utils.JSONUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -14,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +29,8 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private final static Logger logger = LogManager.getLogger(GenFrame.class);
 
 	private JButton btnFirst = new JButton(" << ");
 	private JButton btnPrevious = new JButton(" < ");
@@ -98,17 +102,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		JFileChooser fileChooser = new JFileChooser(new File(FileUtils.USER_HOME));
 		fileChooser.addChoosableFileFilter(new MoviesFileFilter());
-		fileChooser.addChoosableFileFilter(new FileFilter() {
-			@Override
-			public boolean accept(File f) {
-				return f.isFile() && f.getName().endsWith(".json");
-			}
-
-			@Override
-			public String getDescription() {
-				return "JSON Files";
-			}
-		});
+		fileChooser.addChoosableFileFilter(new JSONFileFilter());
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setAcceptAllFileFilterUsed(true);
@@ -128,7 +122,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 				File file = new File("/Users/kouikoui/Desktop/Pictures.json");
 				JSONUtils.savePictures(picManager.getPictures(), file.getAbsolutePath());
-			} else if(f.isFile() && f.getName().endsWith(".json")) {
+			} else if(FileUtils.isJSONFile(fileChooser.getSelectedFile())) {
 				picManager.setPictures(JSONUtils.readFile(f.getAbsolutePath()));
 			}
 		}
@@ -174,25 +168,34 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 				updatePicture(picManager.getCurrentPicture());
 				//updatePicture(getCurrentPicture());
 			}*/
+		} else if (ae.getActionCommand().equals("Reset")) {
+			updatePicture(null);
+		} else if (ae.getActionCommand().equals("Save")) {
+			JFileChooser fileChooser = new JFileChooser(new File(FileUtils.USER_HOME));
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fileChooser.setMultiSelectionEnabled(false);
+			fileChooser.setAcceptAllFileFilterUsed(true);
+			int returnedValue = fileChooser.showSaveDialog(this);
+			logger.debug("returnedValue = " + returnedValue);
+			//updatePicture(null);
+			logger.debug("Saving file");
+			JSONUtils.savePictures(picManager.getPictures(), fileChooser.getSelectedFile().getAbsolutePath());
 		}
 	}
 
 	private void displayPictureInfo(Picture p) {
 
-		if (!txtPictureMetadata.getText().isEmpty()) {
-
-			txtPictureMetadata.setText("");
+		// First, empty the screen...
+		txtPictureMetadata.setText("");
+		if (p != null) {
+			txtPictureMetadata.setText(p.getMetadataAsString());
+			txtPictureMetadata.setCaretPosition(0);
 		}
-
-		txtPictureMetadata.setText(p.getMetadataAsString());
-		txtPictureMetadata.setCaretPosition(0);
 	}
 
 	private void updatePicture(Picture picture) {
 
-		if (picture != null) {
-			pnlPicture.updatePicture(picture);
-			displayPictureInfo(picture);
-		}
+		pnlPicture.updatePicture(picture);
+		displayPictureInfo(picture);
 	}
 }

@@ -1,7 +1,6 @@
 package com.kboutin.utils;
 
 import com.kboutin.core.Picture;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +76,8 @@ public class FileUtils {
 		return md5;
 	}
 
-	public static String getMD5Hash(File f) {
+	// This method is less effective thzn the previous one.
+	/*public static String getMD5Hash(File f) {
 
 		String md5Hash = null;
 		try {
@@ -87,9 +87,40 @@ public class FileUtils {
 		}
 
 		return md5Hash;
+	}*/
+
+	public static String getFileSHA1(File f) {
+
+		logger.debug("Calculating SHA1 hash for " + f.getPath());
+		String sha1 = "";
+		MessageDigest sha1Algo = null;
+
+		try {
+			sha1Algo = MessageDigest.getInstance("SHA-1");
+
+			FileInputStream fis = new FileInputStream(f);
+			int bytesRead = 0;
+			byte[] buff = new byte[8192];
+
+			while ((bytesRead = fis.read(buff)) != -1) {
+				sha1Algo.update(buff, 0, bytesRead);
+			}
+
+			fis.close();
+			byte[] checksum = sha1Algo.digest();
+
+			for (int i = 0; i < checksum.length; i++) {
+				sha1 += Integer.toString((checksum[i] & 0xff) + 0x100, 16).substring(1);
+			}
+
+		} catch (NoSuchAlgorithmException | IOException e) {
+			e.printStackTrace();
+		}
+
+		return sha1;
 	}
 
-	public static String getSHA1Hash(File f) {
+	/*public static String getSHA1Hash(File f) {
 
 		String sha1Hash = null;
 		try {
@@ -99,7 +130,7 @@ public class FileUtils {
 		}
 
 		return sha1Hash;
-	}
+	}*/
 
 	public static boolean isPicture(File f) {
 
@@ -119,6 +150,11 @@ public class FileUtils {
 				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
 						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
 						|| fileName.endsWith(".mov"));
+	}
+
+	public static boolean isJSONFile(File f) {
+
+		return f.isFile() && f.getName().endsWith(".json");
 	}
 
 	public static String getReadableFileSize(File f) {

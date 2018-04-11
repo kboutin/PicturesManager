@@ -8,7 +8,7 @@ import com.kboutin.utils.FileUtils;
 
 /**
  * 
- * @author Kouikoui
+ * @author kboutin
  */
 public class PicturesFileFilter extends FileFilter implements java.io.FileFilter {
 
