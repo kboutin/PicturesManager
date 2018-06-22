@@ -259,4 +259,30 @@ public class FileUtilsTest {
         duration = System.currentTimeMillis() - start;
         System.out.println("getSHA1Hash - Hash : " + sha1Hash + " - Duration : " + duration);
     }*/
+
+    @Test
+    public final void testCountFilesInDir() {
+
+        File f = new File("/Users/kouikoui/Desktop/Kev/Photos");
+        scanDir(f);
+    }
+
+    private static int scanDir(File f) {
+
+        int nbFiles = 0;
+        if (f.isDirectory() && !f.getName().startsWith(".")) {
+            //System.out.println("Scanning " + f.getName());
+            for (File subDir : f.listFiles()) {
+                nbFiles += scanDir(subDir);
+            }
+            if (nbFiles > 1000) System.err.println(f.getName() + " - " + nbFiles + " files");
+            else System.out.println(f.getName() + " - " + nbFiles + " files");
+        } else if (f.isFile()) {
+            if(FileUtils.isPicture(f)) {
+                nbFiles++;
+            }
+        }
+
+        return nbFiles;
+    }
 }

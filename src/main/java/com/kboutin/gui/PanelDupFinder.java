@@ -2,7 +2,6 @@ package com.kboutin.gui;
 
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.MoviesFileFilter;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
@@ -19,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -28,8 +26,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.List;
-import java.util.stream.Stream;
+
+import static com.kboutin.utils.StringConstants.CHOOSE_DIR;
+import static com.kboutin.utils.StringConstants.DELETE_ALL_DUP;
+import static com.kboutin.utils.StringConstants.DELETE_DUP;
 
 public class PanelDupFinder extends JPanel implements ActionListener, ListSelectionListener {
 
@@ -41,7 +41,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	private static final long serialVersionUID = 1L;
 
 	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
 
 	private DefaultListModel<Picture> listModelPictures = new DefaultListModel<>();
 	private JList<Picture> listPictures = new JList<>(listModelPictures);
@@ -49,7 +48,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	private DefaultListModel<String> listModelLocations = new DefaultListModel<>();
 
 	private JButton btnDeleteDuplicates = new JButton("Supprimer les doublons de ce fichier");
-	private JButton btnDeleteAllDuplicates = new JButton("Supprimer tous les doublons");
 
 	private JPanel pnlForDuplicatedLocations = new JPanel(new BorderLayout());
 
@@ -61,26 +59,28 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 		super(new BorderLayout());
 
-		btnChooseDir.addActionListener(this);
-
 		listPictures.addListSelectionListener(this);
 		listPictures.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JList<String> listDupLocations = new JList<>(listModelLocations);
 		listDupLocations.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listDupLocations.addListSelectionListener(this);
 
-		JPanel pnlDirToScan = new JPanel(new BorderLayout());
-		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
-		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
-		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
+		PanelScanDir pnlDirToScan = new PanelScanDir();
+		pnlDirToScan.addActionListener(this);
+		pnlDirToScan.setActionCommand(CHOOSE_DIR);
 
 		JScrollPane scrollDupLocations = new JScrollPane(listDupLocations);
 		scrollDupLocations.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollDupLocations.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+		JButton btnDeleteDuplicates = new JButton("Supprimer les doublons de ce fichier");
 		btnDeleteDuplicates.setEnabled(false);
 		btnDeleteDuplicates.addActionListener(this);
+		btnDeleteDuplicates.setActionCommand(DELETE_DUP);
+
+		JButton btnDeleteAllDuplicates = new JButton("Supprimer tous les doublons");
 		btnDeleteAllDuplicates.addActionListener(this);
+		btnDeleteAllDuplicates.setActionCommand(DELETE_ALL_DUP);
 		JPanel pnlForDeleteButtons = new JPanel();
 		pnlForDeleteButtons.add(btnDeleteDuplicates);
 		pnlForDeleteButtons.add(btnDeleteAllDuplicates);
@@ -143,32 +143,31 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if (e.getSource() == btnChooseDir) {
+		String actionCommand = e.getActionCommand();
+		if (CHOOSE_DIR.equals(actionCommand)) {
 
 			JFileChooser fileChooser = new JFileChooser(new File(FileUtils.USER_HOME));
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setAcceptAllFileFilterUsed(true);
-			fileChooser.addChoosableFileFilter(new MoviesFileFilter());
 			fileChooser.setFileFilter(new PicturesFileFilter());
-			int returnedValue = fileChooser.showOpenDialog(this);
 
-			if (returnedValue == JFileChooser.APPROVE_OPTION) {
+			if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(this)) {
 
-				File f = fileChooser.getSelectedFile();
-				lblDirToScan.setText(f.getPath());
-				PicturesLister picturesLister = new PicturesLister(f);
-				FileFilter fileFilter = null;
+				File selectedFile = fileChooser.getSelectedFile();
+				lblDirToScan.setText(selectedFile.getPath());
+				DuplicatedPicturesLister duplicatedPicturesLister = new DuplicatedPicturesLister(selectedFile, listModelPictures);
+				FileFilter fileFilter;
 				try {
 					fileFilter = (FileFilter) fileChooser.getFileFilter();
-					picturesLister.setFileFilter(fileFilter);
+					duplicatedPicturesLister.setFileFilter(fileFilter);
 				} catch (ClassCastException ex) {
 					logger.debug("AllFilesFilter has been chosen");
 					// doNothing();
 				}
-				picturesLister.execute();
+				duplicatedPicturesLister.execute();
 			}
-		} else if (e.getSource().equals(btnDeleteDuplicates)) {
+		} else if (DELETE_DUP.equals(actionCommand)) {
 
 			String message = null;
 			boolean somethingToDelete = true;
@@ -182,9 +181,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				somethingToDelete = false;
 			}
 
-			int reply = JOptionPane.showConfirmDialog(null, message, "Confirmation de suppression", JOptionPane.YES_NO_OPTION);
-
-			if (reply == JOptionPane.YES_OPTION) {
+			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(null, message, "Confirmation de suppression", JOptionPane.YES_NO_OPTION)) {
 
 				if (somethingToDelete) {
 					Picture p = listPictures.getSelectedValue();
@@ -198,7 +195,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 					updateDuplicatesList(p);
 				}
 			}
-		} else if (e.getSource().equals(btnDeleteAllDuplicates)) {
+		} else if (DELETE_ALL_DUP.equals(actionCommand)) {
 
 			if (picManager.countDuplicates() > 0) {
 
@@ -240,12 +237,12 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	}
 
 	// Class to list pictures and display their names smoothly in the GUI
-	private class PicturesLister extends SwingWorker<List<Picture>, Picture> {
+	/*private class DuplicatedPicturesLister extends SwingWorker<List<Picture>, Picture> {
 
 		private File dirToScan = null;
 		private FileFilter fileFilter = null;
 
-		public PicturesLister(File dirToScan) {
+		public DuplicatedPicturesLister(File dirToScan) {
 
 			this.dirToScan = dirToScan;
 		}
@@ -314,5 +311,5 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				publish(p);
 			}
 		}
-	}
+	}*/
 }

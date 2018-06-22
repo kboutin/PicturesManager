@@ -14,7 +14,13 @@ import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Collections;
+
+import static com.kboutin.utils.GUIUtils.showFileLoader;
+import static com.kboutin.utils.GUIUtils.showFileSaver;
+import static com.kboutin.utils.StringConstants.LABEL_MENU_FILE;
+import static com.kboutin.utils.StringConstants.LABEL_MENU_FILE_LOAD;
+import static com.kboutin.utils.StringConstants.LABEL_MENU_FILE_RESET;
+import static com.kboutin.utils.StringConstants.LABEL_MENU_FILE_SAVE;
 
 public class GenFrame extends JFrame implements ActionListener {
 
@@ -33,8 +39,6 @@ public class GenFrame extends JFrame implements ActionListener {
 
 	// private PanelScanDir pnlScanDir = null;
 	private PicturesManager picManager;
-	private MenuItem menuFileReset = new MenuItem("Reset List");
-	private MenuItem menuFileSave = new MenuItem("Save");
 
 	public GenFrame() {
 
@@ -43,16 +47,27 @@ public class GenFrame extends JFrame implements ActionListener {
 		PanelMetadataExtractor panelMetadataExtractor = new PanelMetadataExtractor();
 
 		MenuBar menuBar = new MenuBar();
-		Menu menuFile = new Menu("File");
+		Menu menuFile = new Menu(LABEL_MENU_FILE);
+		MenuItem menuFileReset = new MenuItem(LABEL_MENU_FILE_RESET);
+		MenuItem menuFileSave = new MenuItem(LABEL_MENU_FILE_SAVE);
+		MenuItem menuFileLoad = new MenuItem(LABEL_MENU_FILE_LOAD);
 
 		menuFileReset.addActionListener(this);
 		menuFileReset.addActionListener(panelMetadataExtractor);
-		menuFileReset.setActionCommand("Reset");
+		menuFileReset.setActionCommand(LABEL_MENU_FILE_RESET);
+
 		menuFileSave.addActionListener(this);
 		menuFileSave.addActionListener(panelMetadataExtractor);
-		menuFileSave.setActionCommand("Save");
+		menuFileSave.setActionCommand(LABEL_MENU_FILE_SAVE);
+
+		menuFileLoad.addActionListener(this);
+		menuFileLoad.addActionListener(panelMetadataExtractor);
+		menuFileLoad.setActionCommand(LABEL_MENU_FILE_LOAD);
+
 		menuFile.add(menuFileReset);
 		menuFile.add(menuFileSave);
+		menuFile.add(menuFileLoad);
+
 		menuBar.add(menuFile);
 		setMenuBar(menuBar);
 
@@ -65,7 +80,7 @@ public class GenFrame extends JFrame implements ActionListener {
 
 		// Default Properties
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setTitle("PicturesManager");
+		setTitle("Pictures Manager");
 		setSize(getToolkit().getScreenSize());
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -76,15 +91,21 @@ public class GenFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		//if (e.getSource().equals(menuFileReset)) {
 		String actionCommand = e.getActionCommand();
-		if (actionCommand.equals(menuFileReset.getActionCommand())) {
+		if (LABEL_MENU_FILE_RESET.equals(actionCommand)) {
 			logger.debug("Resetting list of pictures");
-			picManager.setPictures(Collections.emptyList());
-		} else if (actionCommand.equals(menuFileSave.getActionCommand())) {
-			logger.debug("Saving file");
-			File file = new File("/Users/kouikoui/Desktop/Pictures.json");
-			JSONUtils.savePictures(picManager.getPictures(), file.getAbsolutePath());
+			picManager.clearListPictures();
+		} else if (LABEL_MENU_FILE_SAVE.equals(actionCommand)) {
+			File fileToSave = showFileSaver(this);
+			if (fileToSave != null) {
+				logger.debug("Saving file " + fileToSave.getAbsolutePath());
+				JSONUtils.savePictures(picManager.getPictures(), fileToSave.getAbsolutePath());
+			}
+		} else if (LABEL_MENU_FILE_LOAD.equals(actionCommand)) {
+			File fileToLoad = showFileLoader(this);
+			if (fileToLoad != null) {
+				picManager.loadPicturesFromFile(fileToLoad.getAbsolutePath());
+			}
 		}
 		/*int selectedTab = tabPane.getSelectedIndex();
 		if (selectedTab == 0) {

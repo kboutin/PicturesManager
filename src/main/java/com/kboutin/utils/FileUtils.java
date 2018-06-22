@@ -23,7 +23,6 @@ public class FileUtils {
 	public final static String USER_HOME = System.getProperty("user.home");
 
 	private final static long ONE_KB = 1024;
-	public final static long ONE_MB = ONE_KB * ONE_KB;
 
 	public static void scanDirectory(Path path) throws IOException {
 
@@ -76,19 +75,6 @@ public class FileUtils {
 		return md5;
 	}
 
-	// This method is less effective thzn the previous one.
-	/*public static String getMD5Hash(File f) {
-
-		String md5Hash = null;
-		try {
-			md5Hash = DigestUtils.md5Hex(new FileInputStream(f));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return md5Hash;
-	}*/
-
 	public static String getFileSHA1(File f) {
 
 		logger.debug("Calculating SHA1 hash for " + f.getPath());
@@ -120,18 +106,6 @@ public class FileUtils {
 		return sha1;
 	}
 
-	/*public static String getSHA1Hash(File f) {
-
-		String sha1Hash = null;
-		try {
-			sha1Hash = DigestUtils.sha1Hex(new FileInputStream(f));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return sha1Hash;
-	}*/
-
 	public static boolean isPicture(File f) {
 
 		String fileName = f.getName().toLowerCase();
@@ -140,16 +114,6 @@ public class FileUtils {
 				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
 						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
 						|| fileName.endsWith(".tiff"));
-	}
-
-	public static boolean isMovie(File f) {
-
-		String fileName = f.getName().toLowerCase();
-
-		return f.length() > ONE_KB &&
-				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
-						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
-						|| fileName.endsWith(".mov"));
 	}
 
 	public static boolean isJSONFile(File f) {

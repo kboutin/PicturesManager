@@ -5,6 +5,7 @@ import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.PictureUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Tolerate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +28,15 @@ public class Picture implements Comparable<Picture> {
 	private List<String> duplicates;
 	private Map<String, String> metadata;
 	private Orientation orientation;
+	private int height;
+	private int width;
 
+	public enum Orientation {
+		LANDSCAPE,
+		PORTRAIT
+	}
+
+	@Tolerate
 	public Picture() {
 		// Default Constructor needed for jaxb
 	}
@@ -40,9 +49,11 @@ public class Picture implements Comparable<Picture> {
 		logger.debug("Building a picture from file " + fPicture.getName());
 		this.filePath = fPicture.getPath();
 		this.hash = FileUtils.getFileSHA1(fPicture);
+		this.size = FileUtils.getReadableFileSize(new File(filePath));
 		this.duplicates = new ArrayList<>();
 		this.metadata = PictureUtils.extractMetaData(this.filePath);
 		this.orientation = this.getHeight() > this.getWidth() ? Orientation.PORTRAIT : Orientation.LANDSCAPE;
+		logger.debug("Orientation : " + orientation);
 	}
 
 	/*private Map<String, String> extractMetaData() {
@@ -71,18 +82,20 @@ public class Picture implements Comparable<Picture> {
 		return filePath.substring(filePath.lastIndexOf(FileUtils.FILE_SEP) + 1);
 	}
 
-	public final String getSize() {
-		return FileUtils.getReadableFileSize(new File(filePath));
-	}
-
-	private int getHeight() {
+	public int getHeight() {
 		String height = metadata.get("Exif Image Height");
+		if (height == null) {
+			return 0;
+		}
 		height = height.substring(0, height.indexOf(" ")).trim();
 		return Integer.parseInt(height);
 	}
 
-	private int getWidth() {
+	public int getWidth() {
 		String width = metadata.get("Exif Image Width");
+		if (width == null) {
+			return 0;
+		}
 		width = width.substring(0, width.indexOf(" ")).trim();
 		return Integer.parseInt(width);
 	}
@@ -90,11 +103,6 @@ public class Picture implements Comparable<Picture> {
 	@JsonIgnore
 	public final String getMetadataAsString() {
 
-		/*StringBuilder s = new StringBuilder();
-
-		metadata.keySet().forEach(key -> s.append("[" + key + "] -> " + metadata.get(key) + FileUtils.NEW_LINE));
-
-		return s.toString();*/
 		return metadata.keySet().stream()
 				.map(key -> "[" + key + "] -> " + metadata.get(key))
 				.collect(Collectors.joining(FileUtils.NEW_LINE));
@@ -110,6 +118,7 @@ public class Picture implements Comparable<Picture> {
 
 	public final void addDuplicate(String duplicate) {
 
+		logger.debug("Adding duplicate " + duplicate + " for " + filePath);
 		duplicates.add(duplicate);
 	}
 
@@ -134,7 +143,7 @@ public class Picture implements Comparable<Picture> {
 		return deletedSpace;
 	}
 
-	public final void printMetaData() {
+	/*public final void printMetaData() {
 
 		metadata.keySet().forEach(category -> System.out.format("[%s] -> %s\n", category, metadata.get(category)));
 	}
@@ -147,7 +156,7 @@ public class Picture implements Comparable<Picture> {
 			logger.debug("Duplicated Locations...");
 			duplicates.forEach(duplicatedLocation -> logger.debug("\t" + duplicatedLocation));
 		}
-	}
+	}*/
 
 	@Override
 	public int compareTo(Picture p) {
@@ -170,10 +179,5 @@ public class Picture implements Comparable<Picture> {
 	public final String toString() {
 
 		return this.filePath;
-	}
-
-	public enum Orientation {
-		LANDSCAPE,
-		PORTRAIT
 	}
 }

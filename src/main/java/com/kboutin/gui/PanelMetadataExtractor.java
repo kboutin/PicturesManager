@@ -2,18 +2,12 @@ package com.kboutin.gui;
 
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
-import com.kboutin.gui.filefilters.JSONFileFilter;
-import com.kboutin.gui.filefilters.MoviesFileFilter;
-import com.kboutin.gui.filefilters.PicturesFileFilter;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
-import com.kboutin.utils.JSONUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,6 +16,14 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
+import static com.kboutin.utils.GUIUtils.showFileChooser;
+import static com.kboutin.utils.StringConstants.CHOOSE_DIR;
+import static com.kboutin.utils.StringConstants.FIRST;
+import static com.kboutin.utils.StringConstants.LABEL_MENU_FILE_RESET;
+import static com.kboutin.utils.StringConstants.LAST;
+import static com.kboutin.utils.StringConstants.NEXT;
+import static com.kboutin.utils.StringConstants.PREVIOUS;
 
 public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
@@ -32,13 +34,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 	private final static Logger logger = LogManager.getLogger(GenFrame.class);
 
-	private JButton btnFirst = new JButton(" << ");
-	private JButton btnPrevious = new JButton(" < ");
-	private JButton btnNext = new JButton(" > ");
-	private JButton btnLast = new JButton(" >> ");
-
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
+	private PanelScanDir pnlDirToScan = new PanelScanDir();
 
 	private PanelPicture pnlPicture = new PanelPicture();
 
@@ -50,21 +46,30 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		super(new BorderLayout());
 
+		JButton btnFirst = new JButton(" << ");
 		btnFirst.addActionListener(this);
+		btnFirst.setActionCommand(FIRST);
+
+		JButton btnPrevious = new JButton(" < ");
 		btnPrevious.addActionListener(this);
+		btnPrevious.setActionCommand(PREVIOUS);
+
+		JButton btnNext = new JButton(" > ");
 		btnNext.addActionListener(this);
+		btnNext.setActionCommand(NEXT);
+
+		JButton btnLast = new JButton(" >> ");
 		btnLast.addActionListener(this);
+		btnLast.setActionCommand(LAST);
+
 		JPanel pnlForButtons = new JPanel(new GridLayout(1, 4));
 		pnlForButtons.add(btnFirst);
 		pnlForButtons.add(btnPrevious);
 		pnlForButtons.add(btnNext);
 		pnlForButtons.add(btnLast);
 
-		btnChooseDir.addActionListener(this);
-		JPanel pnlDirToScan = new JPanel(new BorderLayout());
-		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
-		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
-		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
+		pnlDirToScan.addActionListener(this);
+		pnlDirToScan.setActionCommand(CHOOSE_DIR);
 
 		JPanel pnlForPicture = new JPanel(new BorderLayout());
 		pnlForPicture.add(pnlPicture, BorderLayout.CENTER);
@@ -93,94 +98,45 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		add(pnlDirToScan, BorderLayout.NORTH);
 		add(pnlCenter, BorderLayout.CENTER);
-		//add(this.pnlScanDir, BorderLayout.NORTH);
-		//add(pnlForPicture, BorderLayout.WEST);
-		//add(pnlPictureMetadata, BorderLayout.CENTER);
-	}
-
-	private void chooseDir() {
-
-		JFileChooser fileChooser = new JFileChooser(new File(FileUtils.USER_HOME));
-		fileChooser.addChoosableFileFilter(new MoviesFileFilter());
-		fileChooser.addChoosableFileFilter(new JSONFileFilter());
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setAcceptAllFileFilterUsed(true);
-		fileChooser.setFileFilter(new PicturesFileFilter());
-		int returnedValue = fileChooser.showOpenDialog(this);
-
-		if (returnedValue == JFileChooser.APPROVE_OPTION) {
-
-			File f = fileChooser.getSelectedFile();
-			//pnlScanDir.updateDirToScan(f.getPath());
-			if (f.isDirectory()) {
-				lblDirToScan.setText(f.getPath());
-				//metadataExtractor.scanDir(f);
-				picManager.scanDir(f);
-				//lstPictures = picManager.getPictures();
-				updatePicture(picManager.getCurrentPicture());
-
-				File file = new File("/Users/kouikoui/Desktop/Pictures.json");
-				JSONUtils.savePictures(picManager.getPictures(), file.getAbsolutePath());
-			} else if(FileUtils.isJSONFile(fileChooser.getSelectedFile())) {
-				picManager.setPictures(JSONUtils.readFile(f.getAbsolutePath()));
-			}
-		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 
-		if (ae.getSource().equals(btnFirst)) {
+		String actionCommand = ae.getActionCommand();
+		if (FIRST.equals(actionCommand)) {
 			updatePicture(picManager.firstPicture());
-		} else if (ae.getSource().equals(btnPrevious)) {
+		} else if (PREVIOUS.equals(actionCommand)) {
 			updatePicture(picManager.previousPicture());
-		} else if (ae.getSource().equals(btnNext)) {
+		} else if (NEXT.equals(actionCommand)) {
 			updatePicture(picManager.nextPicture());
-			/*PictureFinder finder = new PictureFinder(lstPictures);
-			List<Picture> filteredPictures = finder.findPicturesWithCondition("F-Number", "f/2,8");
-			if (filteredPictures != null && !filteredPictures.isEmpty())
-				updatePicture(new File(filteredPictures.get(0).getFilePath()));*/
-		} else if (ae.getSource().equals(btnLast)) {
+		} else if (LAST.equals(actionCommand)) {
 			updatePicture(picManager.lastPicture());
-		} else if (ae.getSource().equals(btnChooseDir)) {
-
-			chooseDir();
-
-			/*JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			fileChooser.setMultiSelectionEnabled(false);
-			fileChooser.setAcceptAllFileFilterUsed(true);
-			fileChooser.setFileFilter(new PicturesFileFilter());
-			int returnedValue = fileChooser.showOpenDialog(this);
-
-			if (returnedValue == JFileChooser.APPROVE_OPTION) {
-
-				File f = fileChooser.getSelectedFile();
-				//pnlScanDir.updateDirToScan(f.getPath());
-				lblDirToScan.setText(f.getPath());
-				//metadataExtractor.scanDir(f);
-				picManager.setDirToScan(f);
-				picManager.scanDir(f);
-				//metadataExtractor.printMetas(); // Test
-				//lstPictures = metadataExtractor.getLstPictures();
-				lstPictures = picManager.getPictures();
-				updatePicture(picManager.getCurrentPicture());
-				//updatePicture(getCurrentPicture());
-			}*/
-		} else if (ae.getActionCommand().equals("Reset")) {
+		} else if (CHOOSE_DIR.equals(actionCommand)) {
+			File selectedFile = showFileChooser(this);
+			if (selectedFile != null) {
+				pnlDirToScan.setDirToScan(selectedFile.getPath());
+				if (selectedFile.isDirectory()) {
+					//metadataExtractor.scanDir(f);
+					//picManager.scanDir(f);
+					new PicturesLister(selectedFile, this).execute();
+					//lstPictures = picManager.getPictures();
+					//updatePicture(picManager.currentPicture());
+				} else if (FileUtils.isJSONFile(selectedFile)) {
+					picManager.loadPicturesFromFile(selectedFile.getAbsolutePath());
+				}
+			}
+		} else if (LABEL_MENU_FILE_RESET.equals(actionCommand)) {
 			updatePicture(null);
-		} else if (ae.getActionCommand().equals("Save")) {
-			JFileChooser fileChooser = new JFileChooser(new File(FileUtils.USER_HOME));
-			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fileChooser.setMultiSelectionEnabled(false);
-			fileChooser.setAcceptAllFileFilterUsed(true);
-			int returnedValue = fileChooser.showSaveDialog(this);
-			logger.debug("returnedValue = " + returnedValue);
-			//updatePicture(null);
-			logger.debug("Saving file");
-			JSONUtils.savePictures(picManager.getPictures(), fileChooser.getSelectedFile().getAbsolutePath());
-		}
+		} /*else if (LABEL_MENU_FILE_SAVE.equals(actionCommand)) {
+			File fileToSave = showFileSaver();
+			if (fileToSave != null) {
+				logger.debug("Saving file");
+				JSONUtils.savePictures(picManager.getPictures(), fileToSave.getAbsolutePath());
+			}
+		} else if (LABEL_MENU_FILE_LOAD.equals(actionCommand)) {
+			updatePicture(picManager.currentPicture());
+		}*/
 	}
 
 	private void displayPictureInfo(Picture p) {
@@ -193,9 +149,14 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		}
 	}
 
-	private void updatePicture(Picture picture) {
+	public void updatePicture(Picture picture) {
 
 		pnlPicture.updatePicture(picture);
 		displayPictureInfo(picture);
 	}
+
+	/*PictureFinder finder = new PictureFinder(lstPictures);
+			List<Picture> filteredPictures = finder.findPicturesWithCondition("F-Number", "f/2,8");
+			if (filteredPictures != null && !filteredPictures.isEmpty())
+				updatePicture(new File(filteredPictures.get(0).getFilePath()));*/
 }

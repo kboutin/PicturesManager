@@ -1,7 +1,7 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.util.List;
+import com.kboutin.core.Picture;
+import com.kboutin.utils.GUIUtils;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -9,9 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import com.kboutin.core.Picture;
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.util.List;
 
 public class PanelListPicturesNames extends JPanel {
 
@@ -20,13 +19,13 @@ public class PanelListPicturesNames extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private DefaultListModel<Picture> listModelPicture = new DefaultListModel<Picture>();
-	private JList<Picture> lstPictures = new JList<Picture>(listModelPicture);
-	private JScrollPane scrollLstPictures = new JScrollPane(lstPictures);
+	private DefaultListModel<Picture> listModelPicture = new DefaultListModel<>();
+	private JList<Picture> lstPictures = new JList<>(listModelPicture);
 
 	public PanelListPicturesNames() {
 
 		setLayout(new BorderLayout());
+		JScrollPane scrollLstPictures = new JScrollPane(lstPictures);
 		scrollLstPictures.setBorder(GUIUtils.createEtchedTitledBorder("Fichier(s) trouve(s)"));
 		add(scrollLstPictures, BorderLayout.CENTER);
 	}
@@ -60,7 +59,7 @@ public class PanelListPicturesNames extends JPanel {
 	 * Method to return the selected value in the lstPictures object.
 	 * @return the selected picture if it exists, null otherwise.
 	 */
-	public final Picture getSelectedValue() {
+	public final Picture getSelectedPicture() {
 
 		return lstPictures.getSelectedValue();
 	}

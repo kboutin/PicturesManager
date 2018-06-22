@@ -25,7 +25,7 @@ public class JSONUtils {
 		}
 	}
 
-	public static List<Picture> readFile(String fileName) {
+	public static List<Picture> loadPicturesFromFile(String fileName) {
 
 		File fPicture = new File(fileName);
 		ObjectMapper objectMapper = new ObjectMapper();

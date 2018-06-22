@@ -11,19 +11,19 @@ public class PicturesFinder {
 
 	private final static Logger logger = LogManager.getLogger(PicturesFinder.class);
 
-	private List<Picture> lstPictures = null;
+	/*private List<Picture> lstPictures = null;
 
 	public PicturesFinder(List<Picture> lstPictures) {
 
 		this.lstPictures = lstPictures;
-	}
+	}*/
 
-	public final List<Picture> findPicturesWithCondition(String criteria, String value) {
+	public static List<Picture> findPicturesWithCondition(List<Picture> lstPictures, String criteria, String value) {
 
 		logger.debug("Searching pictures having " + value + " for " + criteria);
 		List<Picture> filteredPictures = new ArrayList<>();
 
-		lstPictures.stream().forEach(picture -> {
+		lstPictures.forEach(picture -> {
 			Map<String, String> metaData = picture.getMetadata();
 			for (String key : metaData.keySet()) {
 
