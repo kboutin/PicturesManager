@@ -8,28 +8,25 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 
 public class PanelPicture extends JPanel {
 
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private JLabel lblPicture = new JLabel();
-	private TitledBorder border = GUIUtils.createEtchedTitledBorder("");
+	private final JLabel lblPicture = new JLabel();
 
 	public PanelPicture() {
 
 		super(new BorderLayout());
 
-		setBorder(border);
+		setBorder(GUIUtils.createEtchedTitledBorder(""));
 		add(lblPicture, BorderLayout.CENTER);
 	}
 
@@ -51,7 +48,7 @@ public class PanelPicture extends JPanel {
 			return null;
 		}
 
-		BufferedImage bufferedPicture = null;
+		BufferedImage bufferedPicture;
 		Image resizedPicture = null;
 		try {
 			bufferedPicture = ImageIO.read(selectedPicture);

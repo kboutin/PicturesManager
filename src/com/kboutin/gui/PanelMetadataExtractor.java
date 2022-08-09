@@ -3,6 +3,7 @@ package com.kboutin.gui;
 import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.gui.filefilters.RAWPicturesFileFilter;
 import com.kboutin.utils.GUIUtils;
 import com.kboutin.utils.StringUtils;
 
@@ -17,32 +18,26 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.Serial;
 
 public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	//private final static Logger logger = LogManager.getLogger(PanelMetadataExtractor.class);
 
-	private JPanel pnlForPicture = new JPanel(new BorderLayout());
+	private final JButton btnPrevious = new JButton(" < ");
+	private final JButton btnNext = new JButton(" > ");
 
-	private JPanel pnlForButtons = new JPanel();
-	private JButton btnPrevious = new JButton(" < ");
-	private JButton btnNext = new JButton(" > ");
+	private final JLabel lblDirToScan = new JLabel();
+	private final JButton btnChooseDir = new JButton("...");
 
-	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
+	private final PanelPicture pnlPicture = new PanelPicture();
 
-	private PanelPicture pnlPicture = new PanelPicture();
+	private final JTextArea txtPictureMetadata;
 
-	private JScrollPane pnlPictureMetadata = null;
-	private JTextArea txtPictureMetadata = null;
-
-	private PicturesManager picManager = PicturesManager.getInstance();
+	private final PicturesManager picManager = PicturesManager.getInstance();
 
 	public PanelMetadataExtractor() {
 
@@ -50,14 +45,17 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		btnPrevious.addActionListener(this);
 		btnNext.addActionListener(this);
+		JPanel pnlForButtons = new JPanel();
 		pnlForButtons.add(btnPrevious);
 		pnlForButtons.add(btnNext);
 
 		btnChooseDir.addActionListener(this);
+		JPanel pnlDirToScan = new JPanel(new BorderLayout());
 		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
 		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
 		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 
+		JPanel pnlForPicture = new JPanel(new BorderLayout());
 		pnlForPicture.add(pnlPicture, BorderLayout.CENTER);
 		pnlForPicture.add(pnlForButtons, BorderLayout.SOUTH);
 		pnlForPicture.setFocusable(true);
@@ -72,7 +70,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		txtPictureMetadata = new JTextArea(10, 30);
 		txtPictureMetadata.setEditable(false);
-		pnlPictureMetadata = new JScrollPane(txtPictureMetadata);
+		JScrollPane pnlPictureMetadata = new JScrollPane(txtPictureMetadata);
 		pnlPictureMetadata.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pnlPictureMetadata.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		pnlPictureMetadata.setViewportView(txtPictureMetadata);
@@ -95,6 +93,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setAcceptAllFileFilterUsed(true);
+		fileChooser.addChoosableFileFilter(new RAWPicturesFileFilter());
 		fileChooser.setFileFilter(new PicturesFileFilter());
 		int returnedValue = fileChooser.showOpenDialog(this);
 

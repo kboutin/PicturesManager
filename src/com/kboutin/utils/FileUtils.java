@@ -1,5 +1,8 @@
 package com.kboutin.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,9 +13,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class FileUtils {
 
 	private final static Logger logger = LogManager.getLogger(FileUtils.class);
@@ -20,7 +20,7 @@ public class FileUtils {
 	public static String getFileMD5(File f) {
 
 		logger.debug("Calculating MD5 hash for " + f.getPath());
-		String md5 = "";
+		StringBuilder md5 = new StringBuilder();
 		MessageDigest md5Algo = null;
 
 		try {
@@ -37,25 +37,23 @@ public class FileUtils {
 			fis.close();
 			byte[] checksum = md5Algo.digest();
 
-			for (int i = 0; i < checksum.length; i++) {
-				md5 += Integer.toString((checksum[i] & 0xff) + 0x100, 16).substring(1);
+			for (byte b : checksum) {
+				md5.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
 			}
 
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (NoSuchAlgorithmException | IOException e) {
 			e.printStackTrace();
 		}
 
-		return md5;
+		return md5.toString();
 	}
 
 	public static byte[] calculateMD5(Path file) throws NoSuchAlgorithmException, IOException {
 
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		try (InputStream is = Files.newInputStream(file); DigestInputStream dis = new DigestInputStream(is, md)) {
-			while (dis.read() != -1)
-				;
+			while (dis.read() != -1) {
+			}
 		}
 
 		return md.digest();
@@ -69,6 +67,12 @@ public class FileUtils {
 				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
 						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
 						|| fileName.endsWith(".tiff"));
+	}
+
+	public static boolean isRAWPicture(File f) {
+
+		String fileName = f.getName().toUpperCase();
+		return fileName.endsWith(".ARW") || fileName.endsWith(".CR2");
 	}
 
 	public static boolean isMovie(File f) {
@@ -88,7 +92,7 @@ public class FileUtils {
 
 	public static String getReadableFileSize(long size) {
 
-		String res = null;
+		String res;
 		int unit = 0;
 		double totalSize = size;
 
@@ -99,18 +103,10 @@ public class FileUtils {
 		res = String.format("%.2f", totalSize);
 
 		switch (unit) {
-		case 0:
-			res += " o";
-			break;
-		case 1:
-			res += " ko";
-			break;
-		case 2:
-			res += " Mo";
-			break;
-		case 3:
-			res += " Go";
-			break;
+			case 0 -> res += " o";
+			case 1 -> res += " ko";
+			case 2 -> res += " Mo";
+			case 3 -> res += " Go";
 		}
 
 		return res;
