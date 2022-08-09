@@ -56,16 +56,6 @@ public class PicturesManager {
 	 */
 	public static void main(String[] args) throws ImageProcessingException, IOException {
 
-		//PicturesManager manager = new PicturesManager();
-		//manager.scanDir(new File(""));
-		//System.out.println("Nombre de photos : " + manager.getLstPictures().size());
-
-		// /Users/Kouikoui/Pictures/Bibliotheque iPhoto/Masters
-		//File picture = new File("/Users/Kouikoui/Desktop/IMG_7855.JPG");
-		//File iPhotoDir = new File("/Users/Kouikoui/Pictures/Bibliothèque iPhoto/Masters");
-		//PicturesManager manager = new PicturesManager();
-		//manager.scanDir(iPhotoDir);
-
 		logger.info("Launching application");
 		// Set the look and feel to the default of the system...
 		try {
@@ -101,7 +91,7 @@ public class PicturesManager {
 		if (f.isDirectory()) {
 			Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
 		} else if (f.isFile()) {
-			if(FileUtils.isPicture(f)) {
+			if (FileUtils.isPicture(f)) {
 				//Picture p = new Picture(f);
 				addPicture(new Picture(f));
 				//addMetadataForPicture(p);
