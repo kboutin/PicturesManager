@@ -1,13 +1,12 @@
 package com.kboutin.gui.filefilters;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-import javax.swing.filechooser.FileFilter;
-
-import com.kboutin.utils.FileUtils;
+import static com.kboutin.utils.FileUtils.isPicture;
 
 /**
- * 
+ *
  * @author Kouikoui
  */
 public class PicturesFileFilter extends FileFilter implements java.io.FileFilter {
@@ -15,7 +14,7 @@ public class PicturesFileFilter extends FileFilter implements java.io.FileFilter
 	@Override
 	public boolean accept(File f) {
 
-		return f.isDirectory() || FileUtils.isPicture(f);
+		return f.isDirectory() || isPicture(f);
 	}
 
 	@Override

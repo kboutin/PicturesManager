@@ -4,6 +4,7 @@ import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesFinder;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.gui.filefilters.RAWPicturesFileFilter;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
 
@@ -28,35 +29,28 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public class PanelSearchPictures extends JPanel implements ActionListener, ItemListener, ListSelectionListener {
 
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
+	private final JLabel lblDirToScan = new JLabel();
+	private final JButton btnChooseDir = new JButton("...");
 
-	private JPanel pnlContent = new JPanel(new BorderLayout());
-	private JPanel pnlSearch = new JPanel(new GridLayout(0, 2));
-	private JPanel pnlVisu = new JPanel(new BorderLayout());
+	private final ComboBoxModel<String> cboBoxModelSearchCriteria = new DefaultComboBoxModel<>();
+	private final JComboBox<String> cboSearchCriteria = new JComboBox<>(cboBoxModelSearchCriteria);
+	private final DefaultListModel<String> listModelValues = new DefaultListModel<>();
+	private final JList<String> lstValues = new JList<>(listModelValues);
 
-	private ComboBoxModel<String> cboBoxModelSearchCriteria = new DefaultComboBoxModel<String>();
-	private JComboBox<String> cboSearchCriteria = new JComboBox<String>(cboBoxModelSearchCriteria);
-	private DefaultListModel<String> listModelValues = new DefaultListModel<String>();
-	private JList<String> lstValues = new JList<String>(listModelValues);
-	private JScrollPane scrollLstValues = new JScrollPane(lstValues);
+	private final PanelListPicturesNames pnlListPictures = new PanelListPicturesNames();
+	private final PanelPicture pnlPicture = new PanelPicture();
 
-	private PanelListPicturesNames pnlListPictures = new PanelListPicturesNames();
-	private PanelPicture pnlPicture = new PanelPicture();
-
-	private PicturesManager picManager = PicturesManager.getInstance();
+	private final PicturesManager picManager = PicturesManager.getInstance();
 
 	public PanelSearchPictures() {
 
@@ -64,6 +58,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 
 		btnChooseDir.addActionListener(this);
 
+		JPanel pnlDirToScan = new JPanel(new BorderLayout());
 		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
 		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
 		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
@@ -72,14 +67,18 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		lstValues.setVisibleRowCount(3);
 		cboSearchCriteria.addItemListener(this);
 		lstValues.addListSelectionListener(this);
+		JPanel pnlSearch = new JPanel(new GridLayout(0, 2));
 		pnlSearch.add(cboSearchCriteria);
+		JScrollPane scrollLstValues = new JScrollPane(lstValues);
 		pnlSearch.add(scrollLstValues);
 		pnlSearch.setBorder(GUIUtils.createEtchedTitledBorder("Criteres de recherche"));
 
 		pnlListPictures.addListSelectionListener(this);
+		JPanel pnlVisu = new JPanel(new BorderLayout());
 		pnlVisu.add(pnlListPictures, BorderLayout.WEST);
 		pnlVisu.add(pnlPicture, BorderLayout.CENTER);
 
+		JPanel pnlContent = new JPanel(new BorderLayout());
 		pnlContent.add(pnlSearch, BorderLayout.NORTH);
 		pnlContent.add(pnlVisu, BorderLayout.CENTER);
 
@@ -96,6 +95,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setAcceptAllFileFilterUsed(false);
+			fileChooser.addChoosableFileFilter(new RAWPicturesFileFilter());
 			fileChooser.setFileFilter(new PicturesFileFilter());
 			int returnedValue = fileChooser.showOpenDialog(this);
 
@@ -118,7 +118,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			picManager.getValuesForKey(selectedCriteria).stream().forEach(foundValue -> listModelValues.addElement(foundValue));
+			picManager.getValuesForKey(selectedCriteria).forEach(listModelValues::addElement);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 				listModelValues.clear();
 			}
 			String selectedCriteria = cboBoxModelSearchCriteria.getSelectedItem().toString();
-			picManager.getValuesForKey(selectedCriteria).forEach(foundValue -> listModelValues.addElement(foundValue));
+			picManager.getValuesForKey(selectedCriteria).forEach(listModelValues::addElement);
 		}
 
 		@Override
@@ -182,7 +182,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 		private void scanDir(File f) {
 
 			if (f.isDirectory()) {
-				Stream.of(f.listFiles()).forEach(subFile -> scanDir(subFile));
+				Stream.of(f.listFiles()).forEach(this::scanDir);
 			} else if (f.isFile()) {
 				if (FileUtils.isPicture(f)) {
 					int oldKeysSize = picManager.getMetadataKeySet().size();
@@ -192,7 +192,7 @@ public class PanelSearchPictures extends JPanel implements ActionListener, ItemL
 					Set<String> newKeys = picManager.getMetadataKeySet();
 					if (newKeys.size() > oldKeysSize) {
 						// Publish name only if a new metaData has been added to the list ...
-						newKeys.forEach(newKey -> publish(newKey));
+						newKeys.forEach(this::publish);
 					}
 				}
 			}

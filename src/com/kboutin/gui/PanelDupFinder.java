@@ -4,6 +4,7 @@ import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.MoviesFileFilter;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
+import com.kboutin.gui.filefilters.RAWPicturesFileFilter;
 import com.kboutin.utils.FileUtils;
 import com.kboutin.utils.GUIUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,46 +29,33 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.List;
 
 public class PanelDupFinder extends JPanel implements ActionListener, ListSelectionListener {
 
-	private final static Logger logger = LogManager.getLogger(PanelDupFinder.class);
-
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private JPanel pnlDirToScan = new JPanel(new BorderLayout());
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
+	private final static Logger logger = LogManager.getLogger(PanelDupFinder.class);
+
+	private final JLabel lblDirToScan = new JLabel();
+	private final JButton btnChooseDir = new JButton("...");
 	//private PanelScanDir pnlScanDir = null;
 
-	//private JPanel pnlDuplicatedFiles = new JPanel(new BorderLayout());
-	private JPanel pnlDuplicatedFiles = new JPanel(new GridLayout());
-	private DefaultListModel<Picture> listModelPictures = new DefaultListModel<Picture>();
-	private JList<Picture> listPictures = new JList<Picture>(listModelPictures);
-	private JScrollPane scroll = new JScrollPane(listPictures);
+	private final DefaultListModel<Picture> listModelPictures = new DefaultListModel<>();
+	private final JList<Picture> listPictures = new JList<>(listModelPictures);
 
-	private DefaultListModel<String> listModelLocations = new DefaultListModel<String>();
-	private JList<String> listDupLocations = new JList<String>(listModelLocations);
-	private JScrollPane scrollDupLocations = new JScrollPane(listDupLocations);
+	private final DefaultListModel<String> listModelLocations = new DefaultListModel<>();
 
-	private JLabel lblLostSize = new JLabel();
+	private final JButton btnDeleteDuplicates = new JButton("Supprimer les doublons de ce fichier");
+	private final JButton btnDeleteAllDuplicates = new JButton("Supprimer tous les doublons");
 
-	private JPanel pnlForDeleteButtons = new JPanel();
-	private JButton btnDeleteDuplicates = new JButton("Supprimer les doublons de ce fichier");
-	private JButton btnDeleteAllDuplicates = new JButton("Supprimer tous les doublons");
+	private final JPanel pnlForDuplicatedLocations = new JPanel(new BorderLayout());
 
-	private JPanel pnlLeft = new JPanel(new GridLayout(0, 1));
-	private JPanel pnlForFiles = new JPanel(new BorderLayout());
-	private JPanel pnlForDuplicatedLocations = new JPanel(new BorderLayout());
+	private final PanelPicture pnlPicture = new PanelPicture();
 
-	private PanelPicture pnlPicture = new PanelPicture();
-
-	private PicturesManager picManager = PicturesManager.getInstance();
-	private PicturesLister picturesLister = null;
+	private final PicturesManager picManager = PicturesManager.getInstance();
 
 	public PanelDupFinder() {
 
@@ -77,32 +65,42 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 		listPictures.addListSelectionListener(this);
 		listPictures.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JList<String> listDupLocations = new JList<>(listModelLocations);
 		listDupLocations.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listDupLocations.addListSelectionListener(this);
 
+		JPanel pnlDirToScan = new JPanel(new BorderLayout());
 		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
 		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
 		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 
+		JScrollPane scrollDupLocations = new JScrollPane(listDupLocations);
 		scrollDupLocations.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollDupLocations.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
 		btnDeleteDuplicates.setEnabled(false);
 		btnDeleteDuplicates.addActionListener(this);
 		btnDeleteAllDuplicates.addActionListener(this);
+		JPanel pnlForDeleteButtons = new JPanel();
 		pnlForDeleteButtons.add(btnDeleteDuplicates);
 		pnlForDeleteButtons.add(btnDeleteAllDuplicates);
 
+		JLabel lblLostSize = new JLabel();
 		pnlForDuplicatedLocations.add(lblLostSize, BorderLayout.NORTH);
 		pnlForDuplicatedLocations.add(scrollDupLocations, BorderLayout.CENTER);
 		pnlForDuplicatedLocations.add(pnlForDeleteButtons, BorderLayout.SOUTH);
 		pnlForDuplicatedLocations.setBorder(GUIUtils.createEtchedTitledBorder("Doublons"));
 
+		JPanel pnlForFiles = new JPanel(new BorderLayout());
+		JScrollPane scroll = new JScrollPane(listPictures);
 		pnlForFiles.add(scroll);
 		pnlForFiles.setBorder(GUIUtils.createEtchedTitledBorder("Fichiers trouves"));
+		JPanel pnlLeft = new JPanel(new GridLayout(0, 1));
 		pnlLeft.add(pnlForFiles);
 		pnlLeft.add(pnlForDuplicatedLocations);
 
+		//private JPanel pnlDuplicatedFiles = new JPanel(new BorderLayout());
+		JPanel pnlDuplicatedFiles = new JPanel(new GridLayout());
 		pnlDuplicatedFiles.add(pnlLeft);
 		pnlDuplicatedFiles.add(pnlPicture);
 
@@ -136,7 +134,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 		if (selectedPic != null) {
 
-			selectedPic.getDuplicates().stream().forEach(location -> listModelLocations.addElement(location));
+			selectedPic.getDuplicates().forEach(listModelLocations::addElement);
 		}
 
 		String lostSize = FileUtils.getReadableFileSize(picManager.getTotalWastedSpace());
@@ -153,6 +151,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			fileChooser.setMultiSelectionEnabled(false);
 			fileChooser.setAcceptAllFileFilterUsed(true);
 			fileChooser.addChoosableFileFilter(new MoviesFileFilter());
+			fileChooser.addChoosableFileFilter(new RAWPicturesFileFilter());
 			fileChooser.setFileFilter(new PicturesFileFilter());
 			int returnedValue = fileChooser.showOpenDialog(this);
 
@@ -160,7 +159,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 				File f = fileChooser.getSelectedFile();
 				lblDirToScan.setText(f.getPath());
-				picturesLister = new PicturesLister(f);
+				PicturesLister picturesLister = new PicturesLister(f);
 				FileFilter fileFilter = null;
 				try {
 					fileFilter = (FileFilter) fileChooser.getFileFilter();
@@ -173,7 +172,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 			}
 		} else if (e.getSource().equals(btnDeleteDuplicates)) {
 
-			String message = null;
+			String message;
 			boolean somethingToDelete = true;
 			if (listModelLocations.size() > 0) {
 
@@ -235,8 +234,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				updateDuplicatesList(tmpPic);
 				pnlPicture.updatePicture(tmpPic);
 				btnDeleteDuplicates.setEnabled(tmpPic.hasDuplicates()); // Enable the button only if needed ...
-
-				tmpPic = null;
 			} else {
 
 				btnDeleteDuplicates.setEnabled(false);
@@ -247,7 +244,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	// Class to list pictures and display their names smoothly in the GUI
 	private class PicturesLister extends SwingWorker<List<Picture>, Picture> {
 
-		private File dirToScan = null;
+		private final File dirToScan;
 		private FileFilter fileFilter = null;
 
 		public PicturesLister(File dirToScan) {
@@ -260,7 +257,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 
 		@Override
-		protected List<Picture> doInBackground() throws Exception {
+		protected List<Picture> doInBackground() {
 
 			if (fileFilter == null) {
 				scanDir(dirToScan);
@@ -280,11 +277,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 		@Override
 		protected void process(List<Picture> chunks) {
-
-			for (Picture p : chunks) {
-
-				listModelPictures.addElement(p);
-			}
+			chunks.forEach(listModelPictures::addElement);
 		}
 
 		private List<Picture> scanDir(File f) {

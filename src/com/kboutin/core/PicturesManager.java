@@ -31,10 +31,10 @@ public class PicturesManager {
 
 	private static PicturesManager INSTANCE = null;
 
-	private List<Picture> lstPictures = new ArrayList<>();
+	private final List<Picture> lstPictures = new ArrayList<>();
 
-	private Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
-	private static List<String> lstAcceptedMetadata = new ArrayList<>(
+	private final Map<String, Set<String>> mapValuesForMetadata = new TreeMap<>();
+	private static final List<String> lstAcceptedMetadata = new ArrayList<>(
 		Arrays.asList(
 				"Aperture Value",
 				"F-Number",
@@ -60,13 +60,8 @@ public class PicturesManager {
 		// Set the look and feel to the default of the system...
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+				 IllegalAccessException e) {
 			e.printStackTrace();
 		}
 

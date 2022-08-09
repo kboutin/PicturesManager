@@ -1,25 +1,23 @@
 package com.kboutin.gui;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
+import com.kboutin.utils.GUIUtils;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.kboutin.utils.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.io.Serial;
 
 public class PanelScanDir extends JPanel {
 
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static PanelScanDir INSTANCE = null;
 
-	private JLabel lblDirToScan = new JLabel();
-	private JButton btnChooseDir = new JButton("...");
+	private final JLabel lblDirToScan = new JLabel();
+	private final JButton btnChooseDir = new JButton("...");
 
 	private PanelScanDir() {
 
