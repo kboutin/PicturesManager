@@ -7,7 +7,7 @@ import static com.kboutin.utils.FileUtils.isRAWPicture;
 
 /**
  *
- * @author Kouikoui
+ * @author kboutin
  */
 public class RAWPicturesFileFilter extends FileFilter implements java.io.FileFilter {
 

@@ -7,7 +7,7 @@ import static com.kboutin.utils.FileUtils.isPicture;
 
 /**
  *
- * @author Kouikoui
+ * @author kboutin
  */
 public class PicturesFileFilter extends FileFilter implements java.io.FileFilter {
 

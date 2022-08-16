@@ -9,6 +9,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.io.Serial;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
+
 public class PanelScanDir extends JPanel {
 
 	@Serial
@@ -25,27 +28,23 @@ public class PanelScanDir extends JPanel {
 
 		//btnChooseDir.addActionListener(genFrame);
 
-		add(lblDirToScan, BorderLayout.CENTER);
-		add(btnChooseDir, BorderLayout.EAST);
+		add(lblDirToScan, CENTER);
+		add(btnChooseDir, EAST);
 		setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
 	}
 
 	public static PanelScanDir getInstance() {
-
 		if (INSTANCE == null) {
 			INSTANCE = new PanelScanDir();
 		}
-
 		return INSTANCE;
 	}
 
 	public final void addActionListener(ActionListener l) {
-
 		btnChooseDir.addActionListener(l);
 	}
 
 	public final void updateDirToScan(String dirToScanPath) {
-
 		lblDirToScan.setText(" " + dirToScanPath);
 	}
 }
