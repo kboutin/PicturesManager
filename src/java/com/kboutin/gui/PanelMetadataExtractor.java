@@ -4,8 +4,6 @@ import com.kboutin.core.Picture;
 import com.kboutin.core.PicturesManager;
 import com.kboutin.gui.filefilters.PicturesFileFilter;
 import com.kboutin.gui.filefilters.RAWPicturesFileFilter;
-import com.kboutin.utils.GUIUtils;
-import com.kboutin.utils.StringUtils;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -19,6 +17,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.Serial;
+
+import static com.kboutin.utils.GUIUtils.createEtchedTitledBorder;
+import static com.kboutin.utils.StringConstants.USER_HOME;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_AND_DIRECTORIES;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
@@ -45,19 +54,19 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 
 		btnPrevious.addActionListener(this);
 		btnNext.addActionListener(this);
-		JPanel pnlForButtons = new JPanel();
-		pnlForButtons.add(btnPrevious);
-		pnlForButtons.add(btnNext);
+		JPanel pnlPreviousNextButtons = new JPanel();
+		pnlPreviousNextButtons.add(btnPrevious);
+		pnlPreviousNextButtons.add(btnNext);
 
 		btnChooseDir.addActionListener(this);
 		JPanel pnlDirToScan = new JPanel(new BorderLayout());
-		pnlDirToScan.add(lblDirToScan, BorderLayout.CENTER);
-		pnlDirToScan.add(btnChooseDir, BorderLayout.EAST);
-		pnlDirToScan.setBorder(GUIUtils.createEtchedTitledBorder("Repertoire a analyser"));
+		pnlDirToScan.add(lblDirToScan, CENTER);
+		pnlDirToScan.add(btnChooseDir, EAST);
+		pnlDirToScan.setBorder(createEtchedTitledBorder("Repertoire a analyser"));
 
 		JPanel pnlForPicture = new JPanel(new BorderLayout());
-		pnlForPicture.add(pnlPicture, BorderLayout.CENTER);
-		pnlForPicture.add(pnlForButtons, BorderLayout.SOUTH);
+		pnlForPicture.add(pnlPicture, CENTER);
+		pnlForPicture.add(pnlPreviousNextButtons, SOUTH);
 		pnlForPicture.setFocusable(true);
 		// TODO KBO Find a way to add a keyListener
 		// https://stackoverflow.com/questions/3728035/java-tracking-keystrokes-with-inputmap
@@ -71,33 +80,29 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 		txtPictureMetadata = new JTextArea(10, 30);
 		txtPictureMetadata.setEditable(false);
 		JScrollPane pnlPictureMetadata = new JScrollPane(txtPictureMetadata);
-		pnlPictureMetadata.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pnlPictureMetadata.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		pnlPictureMetadata.setViewportView(txtPictureMetadata);
-		pnlPictureMetadata.setBorder(GUIUtils.createEtchedTitledBorder("Metadonnees"));
+		pnlPictureMetadata.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		pnlPictureMetadata.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+		pnlPictureMetadata.setBorder(createEtchedTitledBorder("Metadonnees"));
 
 		JPanel pnlCenter = new JPanel(new GridLayout(1, 0));
 		pnlCenter.add(pnlForPicture);
 		pnlCenter.add(pnlPictureMetadata);
 
-		add(pnlDirToScan, BorderLayout.NORTH);
-		add(pnlCenter, BorderLayout.CENTER);
-		//add(this.pnlScanDir, BorderLayout.NORTH);
-		//add(pnlForPicture, BorderLayout.WEST);
-		//add(pnlPictureMetadata, BorderLayout.CENTER);
+		add(pnlDirToScan, NORTH);
+		add(pnlCenter, CENTER);
 	}
 
-	private final void chooseDir() {
+	private void openFileChooser() {
 
-		JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		JFileChooser fileChooser = new JFileChooser(new File(USER_HOME));
+		fileChooser.setFileSelectionMode(FILES_AND_DIRECTORIES);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setAcceptAllFileFilterUsed(true);
 		fileChooser.addChoosableFileFilter(new RAWPicturesFileFilter());
 		fileChooser.setFileFilter(new PicturesFileFilter());
 		int returnedValue = fileChooser.showOpenDialog(this);
 
-		if (returnedValue == JFileChooser.APPROVE_OPTION) {
+		if (returnedValue == APPROVE_OPTION) {
 
 			File f = fileChooser.getSelectedFile();
 			//pnlScanDir.updateDirToScan(f.getPath());
@@ -113,10 +118,8 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent ae) {
 
 		if (ae.getSource().equals(btnPrevious)) {
-
 			updatePicture(picManager.previousPicture());
 		} else if (ae.getSource().equals(btnNext)) {
-
 			updatePicture(picManager.nextPicture());
 			/*PictureFinder finder = new PictureFinder(lstPictures);
 			List<Picture> filteredPictures = finder.findPicturesWithCondition("F-Number", "f/2,8");
@@ -124,7 +127,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 				updatePicture(new File(filteredPictures.get(0).getFilePath()));*/
 		} else if (ae.getSource().equals(btnChooseDir)) {
 
-			chooseDir();
+			openFileChooser();
 
 			/*JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -151,18 +154,14 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 	}
 
 	private void displayPictureInfo(Picture p) {
-
 		if (!txtPictureMetadata.getText().isEmpty()) {
-
 			txtPictureMetadata.setText("");
 		}
-
 		txtPictureMetadata.setText(p.getMetadataAsString());
 		txtPictureMetadata.setCaretPosition(0);
 	}
 
 	private void updatePicture(Picture picture) {
-
 		if (picture != null) {
 			pnlPicture.updatePicture(picture);
 			displayPictureInfo(picture);

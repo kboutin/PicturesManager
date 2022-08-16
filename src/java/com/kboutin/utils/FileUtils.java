@@ -1,8 +1,5 @@
 package com.kboutin.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,13 +10,15 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static java.util.Comparator.reverseOrder;
+
 public class FileUtils {
 
-	private final static Logger logger = LogManager.getLogger(FileUtils.class);
+	//private final static Logger logger = LogManager.getLogger(FileUtils.class);
 
 	public static String getFileMD5(File f) {
 
-		logger.debug("Calculating MD5 hash for " + f.getPath());
+		//logger.debug("Calculating MD5 hash for " + f.getPath());
 		StringBuilder md5 = new StringBuilder();
 		MessageDigest md5Algo = null;
 
@@ -63,7 +62,7 @@ public class FileUtils {
 
 		String fileName = f.getName().toLowerCase();
 
-		return f.length() > StringUtils.KB &&
+		return f.length() > StringConstants.KB &&
 				(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")
 						|| fileName.endsWith(".png") || fileName.endsWith(".gif")
 						|| fileName.endsWith(".tiff"));
@@ -72,6 +71,8 @@ public class FileUtils {
 	public static boolean isRAWPicture(File f) {
 
 		String fileName = f.getName().toUpperCase();
+		// ARW is RAW format from Sony (Alpha 7 mark 4)
+		// CR2 is RAW format from Canon (70D && 6D mark 2)
 		return fileName.endsWith(".ARW") || fileName.endsWith(".CR2");
 	}
 
@@ -79,7 +80,7 @@ public class FileUtils {
 
 		String fileName = f.getName().toLowerCase();
 
-		return f.length() > StringUtils.KB &&
+		return f.length() > StringConstants.KB &&
 				(fileName.endsWith(".avi") || fileName.endsWith(".mp4")
 						|| fileName.endsWith(".mpg") || fileName.endsWith(".mpeg")
 						|| fileName.endsWith(".mov"));
@@ -92,7 +93,6 @@ public class FileUtils {
 
 	public static String getReadableFileSize(long size) {
 
-		String res;
 		int unit = 0;
 		double totalSize = size;
 
@@ -100,15 +100,30 @@ public class FileUtils {
 			totalSize /= 1024;
 			unit++;
 		}
-		res = String.format("%.2f", totalSize);
 
+		String humanReadableUnit;
 		switch (unit) {
-			case 0 -> res += " o";
-			case 1 -> res += " ko";
-			case 2 -> res += " Mo";
-			case 3 -> res += " Go";
+			case 1 -> humanReadableUnit = "ko";
+			case 2 -> humanReadableUnit = "Mo";
+			case 3 -> humanReadableUnit = "Go";
+			default -> humanReadableUnit = "o";
 		}
 
-		return res;
+		return String.format("%.2f %s", totalSize, humanReadableUnit);
+	}
+
+	public static void saveFile(String fileName, String fileContent) {
+
+	}
+
+	public static void removeDir(File fileToDelete) throws IOException {
+		removeDir(fileToDelete.toPath());
+	}
+
+	public static void removeDir(Path pathToDelete) throws IOException {
+		Files.walk(pathToDelete)
+				.sorted(reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
 	}
 }

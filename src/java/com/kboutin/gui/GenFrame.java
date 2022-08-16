@@ -2,19 +2,12 @@ package com.kboutin.gui;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import java.io.Serial;
 
 public class GenFrame extends JFrame {
 
-	/**
-	 *
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
-
-	//private ComboBoxModel cboModel = new DefaultComboBoxModel();
-	//private JComboBox cboPictures = new JComboBox(cboModel);
-	//private JList listOfPictures = new JList(listModel);
-
-	// private PanelScanDir pnlScanDir = null;
 
 	public GenFrame() {
 

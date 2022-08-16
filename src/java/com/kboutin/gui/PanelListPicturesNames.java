@@ -1,7 +1,6 @@
 package com.kboutin.gui;
 
 import com.kboutin.core.Picture;
-import com.kboutin.utils.GUIUtils;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -12,6 +11,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.io.Serial;
 import java.util.List;
+
+import static com.kboutin.utils.GUIUtils.createEtchedTitledBorder;
+import static java.awt.BorderLayout.CENTER;
 
 public class PanelListPicturesNames extends JPanel {
 
@@ -25,19 +27,17 @@ public class PanelListPicturesNames extends JPanel {
 
 		setLayout(new BorderLayout());
 		JScrollPane scrollLstPictures = new JScrollPane(lstPictures);
-		scrollLstPictures.setBorder(GUIUtils.createEtchedTitledBorder("Fichier(s) trouve(s)"));
-		add(scrollLstPictures, BorderLayout.CENTER);
+		scrollLstPictures.setBorder(createEtchedTitledBorder("Fichier(s) trouve(s)"));
+		add(scrollLstPictures, CENTER);
 	}
 
 	public final void clearList() {
-
 		if (!listModelPicture.isEmpty()) {
 			listModelPicture.clear();
 		}
 	}
 
 	public final void updateList(List<Picture> lstPictures) {
-
 		lstPictures.forEach(listModelPicture::addElement);
 	}
 
@@ -47,10 +47,8 @@ public class PanelListPicturesNames extends JPanel {
 
 	/**
 	 * Method to add the given listSelectionListener to the lstPictures object.
-	 * @param l
 	 */
 	public final void addListSelectionListener(ListSelectionListener l) {
-
 		lstPictures.addListSelectionListener(l);
 	}
 
@@ -59,11 +57,16 @@ public class PanelListPicturesNames extends JPanel {
 	 * @return the selected picture if it exists, null otherwise.
 	 */
 	public final Picture getSelectedValue() {
-
 		return lstPictures.getSelectedValue();
 	}
 
+	public final void selectFirstValue() {
+		if (!listModelPicture.isEmpty() && lstPictures.getSelectedIndex() == -1) {
+			lstPictures.setSelectedIndex(0);
+		}
+	}
+
 	public final boolean triggeredListSelectionEvent(ListSelectionEvent e) {
-		return e.getSource().equals(lstPictures);
+		return !e.getValueIsAdjusting() && e.getSource().equals(lstPictures);
 	}
 }
