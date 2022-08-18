@@ -40,7 +40,6 @@ public class Picture implements Comparable<Picture> {
 	}
 
 	private Map<String, String> extractMetaData() {
-
 		//logger.debug("Extracting metadata for file : " + filePath);
 		Map<String, String> mapMetaData = new TreeMap<>();
 
@@ -56,7 +55,6 @@ public class Picture implements Comparable<Picture> {
 					.forEach(directory -> directory.getTags()
 							.forEach(tag -> mapMetaData.put(tag.getTagName(), tag.getDescription())));
 		}
-
 		return mapMetaData;
 	}
 

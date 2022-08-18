@@ -107,9 +107,7 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 			File f = fileChooser.getSelectedFile();
 			//pnlScanDir.updateDirToScan(f.getPath());
 			lblDirToScan.setText(f.getPath());
-			//metadataExtractor.scanDir(f);
 			picManager.scanDir(f);
-			//lstPictures = picManager.getPictures();
 			updatePicture(picManager.getCurrentPicture());
 		}
 	}
@@ -121,35 +119,8 @@ public class PanelMetadataExtractor extends JPanel implements ActionListener {
 			updatePicture(picManager.previousPicture());
 		} else if (ae.getSource().equals(btnNext)) {
 			updatePicture(picManager.nextPicture());
-			/*PictureFinder finder = new PictureFinder(lstPictures);
-			List<Picture> filteredPictures = finder.findPicturesWithCondition("F-Number", "f/2,8");
-			if (filteredPictures != null && !filteredPictures.isEmpty())
-				updatePicture(new File(filteredPictures.get(0).getFilePath()));*/
 		} else if (ae.getSource().equals(btnChooseDir)) {
-
 			openFileChooser();
-
-			/*JFileChooser fileChooser = new JFileChooser(new File(StringUtils.USER_HOME));
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			fileChooser.setMultiSelectionEnabled(false);
-			fileChooser.setAcceptAllFileFilterUsed(true);
-			fileChooser.setFileFilter(new PicturesFileFilter());
-			int returnedValue = fileChooser.showOpenDialog(this);
-
-			if (returnedValue == JFileChooser.APPROVE_OPTION) {
-
-				File f = fileChooser.getSelectedFile();
-				//pnlScanDir.updateDirToScan(f.getPath());
-				lblDirToScan.setText(f.getPath());
-				//metadataExtractor.scanDir(f);
-				picManager.setDirToScan(f);
-				picManager.scanDir(f);
-				//metadataExtractor.printMetas(); // Test
-				//lstPictures = metadataExtractor.getLstPictures();
-				lstPictures = picManager.getPictures();
-				updatePicture(picManager.getCurrentPicture());
-				//updatePicture(getCurrentPicture());
-			}*/
 		}
 	}
 

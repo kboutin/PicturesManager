@@ -33,11 +33,9 @@ import static com.kboutin.utils.StringConstants.USER_HOME;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 import static javax.swing.JOptionPane.DEFAULT_OPTION;
-import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 public class PanelDupFinder extends JPanel implements ActionListener, ListSelectionListener {
 
@@ -65,7 +63,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	private final PicturesManager picManager = PicturesManager.getInstance();
 
 	public PanelDupFinder() {
-
 		super(new BorderLayout());
 
 		btnChooseDir.addActionListener(this);
@@ -116,12 +113,10 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	}
 
 	private long deleteDuplicatesForPicture(Picture p) {
-
 		return p.deleteDuplicates();
 	}
 
 	private long deleteAllDuplicates() {
-
 		return Collections.list(listModelPictures.elements())
 				.stream()
 				.mapToLong(this::deleteDuplicatesForPicture)
@@ -129,7 +124,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 	}
 
 	private void updateDuplicatesList(Picture selectedPic) {
-
 		if (!listModelLocations.isEmpty()) {
 			listModelLocations.clear();
 		}
@@ -143,7 +137,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		if (e.getSource().equals(btnChooseDir)) {
 			JFileChooser fileChooser = new JFileChooser(new File(USER_HOME));
 			fileChooser.setFileSelectionMode(DIRECTORIES_ONLY);
@@ -172,7 +165,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 					//logger.info("It will free " + p.getWastedSpace());
 					if (p != null) {
 						long deletedSpace = deleteDuplicatesForPicture(p);
-						showMessageDialog(null, "Vous avez gagne " + getReadableFileSize(deletedSpace), "Espace gagne", PLAIN_MESSAGE);
+						showConfirmDialog(null, "Vous avez gagne " + getReadableFileSize(deletedSpace), "Espace gagne", DEFAULT_OPTION);
 					}
 					updateDuplicatesList(p);
 				}
@@ -181,21 +174,18 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 				showConfirmDialog(null, message, "Confirmation de suppression", DEFAULT_OPTION);
 			}
 		} else if (e.getSource().equals(btnDeleteAllDuplicates)) {
-
 			if (picManager.countDuplicates() > 0) {
 				String message = "Confirmer la suppression de tous les doublons ?";
 				int reply = showConfirmDialog(null, message, "Confirmation de suppression", YES_NO_OPTION);
 
 				if (reply == YES_OPTION) {
-
 					long deletedSpace = deleteAllDuplicates();
 					//logger.info("Deleting all duplicates");
 					//logger.info("It has freed " + FileUtils.getReadableFileSize(deletedSpace));
-					showMessageDialog(null, "Vous avez gagne " + getReadableFileSize(deletedSpace), "Espace gagne", PLAIN_MESSAGE);
+					showConfirmDialog(null, "Vous avez gagne " + getReadableFileSize(deletedSpace), "Espace gagne", DEFAULT_OPTION);
 					updateDuplicatesList(listPictures.getSelectedValue());
 				}
 			} else {
-				//showMessageDialog(null, "Aucun element a supprimer", "Info", PLAIN_MESSAGE);
 				showConfirmDialog(null, "Aucun element a supprimer", "Info", DEFAULT_OPTION);
 			}
 		}
@@ -203,9 +193,7 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 	@Override
 	public void valueChanged(ListSelectionEvent evt) {
-
 		if (evt.getSource() == listPictures && !evt.getValueIsAdjusting()) {
-
 			Picture tmpPic = listPictures.getSelectedValue();
 			if (tmpPic != null) {
 				updateDuplicatesList(tmpPic);
@@ -234,19 +222,16 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 
 		@Override
 		protected List<Picture> doInBackground() {
-
 			if (fileFilter == null) {
 				scanDir(dirToScan);
 			} else {
 				scanDir(dirToScan, fileFilter);
 			}
-
 			return picManager.getPictures();
 		}
 
 		@Override
 		protected void done() {
-
 			String lostSize = getReadableFileSize(picManager.getTotalWastedSpace());
 			pnlForDuplicatedLocations.setBorder(createEtchedTitledBorder("Doublons (" + lostSize + ")"));
 		}
@@ -261,7 +246,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 
 		private List<Picture> scanDir(File f, FileFilter fileFilter) {
-
 			if (f.exists() && f.isDirectory()) {
 				List<File> filteredFiles = Stream.of(f.listFiles())
 						.filter(file -> isFileAcceptedByFileFilter(file, fileFilter))
@@ -274,7 +258,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 					addAndPublishPicture(f);
 				}
 			}
-
 			return picManager.getPictures();
 		}
 
@@ -283,7 +266,6 @@ public class PanelDupFinder extends JPanel implements ActionListener, ListSelect
 		}
 
 		private void addAndPublishPicture(File f) {
-
 			int prevSize = picManager.countPictures();
 			Picture p = new Picture(f);
 			picManager.addPicture(p);
